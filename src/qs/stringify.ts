@@ -1,5 +1,5 @@
 /**
- * 将对象字符串化成 application/x-www-form-urlencoded 格式
+ * 将对象字符串化成 application/x-www-form-urlencoded 所需的格式
  */
 function stringify(object): string {
   if (typeof object !== "object") {
