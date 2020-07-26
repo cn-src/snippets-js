@@ -9,7 +9,9 @@ function stringify(object: any): string {
   }
   const rs: string[] = [];
   for (const key in object) {
-    rs.push(`${encodeURIComponent(key)}=${encodeURIComponent(object[key])}`);
+    if (Object.prototype.hasOwnProperty.call(object, key)) {
+      rs.push(`${encodeURIComponent(key)}=${encodeURIComponent(object[key])}`);
+    }
   }
   return rs.join("&").replace(/%20/g, "+");
 }

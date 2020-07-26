@@ -52,7 +52,9 @@ function AxiosClient(axios: AxiosStatic) {
       return async function(data: any, pathVariables?: any) {
         const formData = new FormData();
         for (const key in data) {
-          formData.append(key, data[key]);
+          if (Object.prototype.hasOwnProperty.call(data, key)) {
+            formData.append(key, data[key]);
+          }
           data = formData;
         }
         const promise = await axios.request({
@@ -73,7 +75,9 @@ function pathParse(path: string, pathVariables?: any) {
   let rs = path;
   if (pathVariables) {
     for (const key in pathVariables) {
-      rs = path.replace(`{${key}}`, pathVariables[key]);
+      if (Object.prototype.hasOwnProperty.call(pathVariables, key)) {
+        rs = path.replace(`{${key}}`, pathVariables[key]);
+      }
     }
   }
   return rs;
