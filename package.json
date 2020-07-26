@@ -8,6 +8,10 @@
   },
   "devDependencies": {
     "@types/jest": "^26.0.5",
+    "@typescript-eslint/eslint-plugin": "^3.7.0",
+    "@typescript-eslint/parser": "^3.7.0",
+    "eslint": "^7.5.0",
+    "eslint-config-prettier": "^6.11.0",
     "form-data": "^3.0.0",
     "jest": "^26.1.0",
     "mock-http-server": "^1.4.2",
@@ -19,7 +23,8 @@
   },
   "scripts": {
     "build": "rimraf lib && tsc",
-    "test": "jest"
+    "test": "jest",
+    "lint": "eslint"
   },
   "dependencies": {
     "axios": "^0.19.2",

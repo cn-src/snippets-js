@@ -10,11 +10,11 @@ function AxiosClient(axios: AxiosStatic) {
      * GET 请求
      */
     get(url: string) {
-      return async function (params?: any, pathVariables?: any) {
+      return async function(params?: any, pathVariables?: any) {
         const promise = await axios.request({
           url: pathParse(url, pathVariables),
           method: "GET",
-          params,
+          params
         });
         return promise.data;
       };
@@ -23,11 +23,11 @@ function AxiosClient(axios: AxiosStatic) {
      * POST 请求
      */
     post(url: string) {
-      return async function (data?: any, pathVariables?: any) {
+      return async function(data?: any, pathVariables?: any) {
         const promise = await axios.request({
           url: pathParse(url, pathVariables),
           method: "POST",
-          data,
+          data
         });
         return promise.data;
       };
@@ -36,11 +36,11 @@ function AxiosClient(axios: AxiosStatic) {
      * POST 请求，Content-Type 为 application/x-www-form-urlencoded
      */
     postForm(url: string) {
-      return async function (data: any, pathVariables?: any) {
+      return async function(data: any, pathVariables?: any) {
         const promise = await axios.request({
           url: pathParse(url, pathVariables),
           method: "POST",
-          data: stringify(data),
+          data: stringify(data)
         });
         return promise.data;
       };
@@ -49,22 +49,20 @@ function AxiosClient(axios: AxiosStatic) {
      * POST 请求，Content-Type 为 multipart/form-data
      */
     postFormData(url: string) {
-      return async function (data: any, pathVariables?: any) {
+      return async function(data: any, pathVariables?: any) {
         const formData = new FormData();
         for (const key in data) {
-          if (data.hasOwnProperty(key)) {
-            formData.append(key, data[key]);
-          }
+          formData.append(key, data[key]);
           data = formData;
         }
         const promise = await axios.request({
           url: pathParse(url, pathVariables),
           method: "POST",
-          data: formData,
+          data: formData
         });
         return promise.data;
       };
-    },
+    }
   };
 }
 
@@ -75,9 +73,7 @@ function pathParse(path: string, pathVariables?: any) {
   let rs = path;
   if (pathVariables) {
     for (const key in pathVariables) {
-      if (pathVariables.hasOwnProperty(key)) {
-        rs = path.replace(`{${key}}`, pathVariables[key]);
-      }
+      rs = path.replace(`{${key}}`, pathVariables[key]);
     }
   }
   return rs;
