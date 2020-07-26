@@ -12,11 +12,11 @@ declare function AxiosClient(axios: AxiosStatic): {
      */
     post(url: string): (data?: any, pathVariables?: any) => Promise<any>;
     /**
-     * POST 请求，form 表单格式参数
+     * POST 请求，Content-Type 为 application/x-www-form-urlencoded
      */
     postForm(url: string): (data: any, pathVariables?: any) => Promise<any>;
     /**
-     * POST 请求，formData 表单格式参数，文件上传
+     * POST 请求，Content-Type 为 multipart/form-data
      */
     postFormData(url: string): (data: any, pathVariables?: any) => Promise<any>;
 };
