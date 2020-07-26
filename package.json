@@ -24,7 +24,7 @@
   "scripts": {
     "build": "rimraf lib && tsc",
     "test": "jest",
-    "lint": "eslint"
+    "lint": "eslint ."
   },
   "dependencies": {
     "axios": "^0.19.2",

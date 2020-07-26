@@ -50,6 +50,7 @@ function AxiosClient(axios: AxiosStatic) {
      */
     postFormData(url: string) {
       return async function(data: any, pathVariables?: any) {
+        // eslint-disable-next-line no-undef
         const formData = new FormData();
         for (const key in data) {
           if (Object.prototype.hasOwnProperty.call(data, key)) {
