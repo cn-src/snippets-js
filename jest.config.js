@@ -4,11 +4,11 @@ module.exports = {
   coverageDirectory: "./coverage/",
   collectCoverage: true,
   moduleNameMapper: {
-    "^@/(.*)$": "<rootDir>/src/$1"
+    "^@/(.*)$": "<rootDir>/src/$1",
   },
   globals: {
     "ts-jest": {
-      tsConfig: "__tests__/tsconfig.json"
-    }
-  }
+      tsConfig: "__tests__/tsconfig.json",
+    },
+  },
 };

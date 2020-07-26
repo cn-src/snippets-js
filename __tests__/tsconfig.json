@@ -4,17 +4,11 @@
     "esModuleInterop": true,
     "baseUrl": "..",
     "paths": {
-      "@/*": [
-        "./src/*"
-      ]
+      "@/*": ["./src/*"]
     }
   },
-  "include": [
-    "./**/*.ts"
-  ],
-  "exclude": [
-    "../node_modules"
-  ],
+  "include": ["./**/*.ts"],
+  "exclude": ["../node_modules"],
   "references": [
     {
       "path": "../tsconfig.json"

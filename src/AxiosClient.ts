@@ -1,6 +1,4 @@
-import {
-  AxiosStatic
-} from "axios";
+import { AxiosStatic } from "axios";
 import stringify from "./qs/stringify";
 
 /**
@@ -12,11 +10,11 @@ function AxiosClient(axios: AxiosStatic) {
      * GET 请求
      */
     get(url: string) {
-      return async function(params?: any, pathVariables?: any) {
+      return async function (params?: any, pathVariables?: any) {
         const promise = await axios.request({
           url: pathParse(url, pathVariables),
           method: "GET",
-          params
+          params,
         });
         return promise.data;
       };
@@ -25,25 +23,24 @@ function AxiosClient(axios: AxiosStatic) {
      * POST 请求
      */
     post(url: string) {
-      return async function(data?: any, pathVariables?: any) {
+      return async function (data?: any, pathVariables?: any) {
         const promise = await axios.request({
           url: pathParse(url, pathVariables),
           method: "POST",
-          data
+          data,
         });
         return promise.data;
       };
-
     },
     /**
      * POST 请求，Content-Type 为 application/x-www-form-urlencoded
      */
     postForm(url: string) {
-      return async function(data: any, pathVariables?: any) {
+      return async function (data: any, pathVariables?: any) {
         const promise = await axios.request({
           url: pathParse(url, pathVariables),
           method: "POST",
-          data: stringify(data)
+          data: stringify(data),
         });
         return promise.data;
       };
@@ -52,7 +49,7 @@ function AxiosClient(axios: AxiosStatic) {
      * POST 请求，Content-Type 为 multipart/form-data
      */
     postFormData(url: string) {
-      return async function(data: any, pathVariables?: any) {
+      return async function (data: any, pathVariables?: any) {
         const formData = new FormData();
         for (const key in data) {
           if (data.hasOwnProperty(key)) {
@@ -63,11 +60,11 @@ function AxiosClient(axios: AxiosStatic) {
         const promise = await axios.request({
           url: pathParse(url, pathVariables),
           method: "POST",
-          data: formData
+          data: formData,
         });
         return promise.data;
       };
-    }
+    },
   };
 }
 

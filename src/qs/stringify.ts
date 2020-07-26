@@ -3,7 +3,9 @@
  */
 function stringify(object): string {
   if (typeof object !== "object") {
-    throw new TypeError(`Expect: 'object' type, Actual: '${typeof (object)}' type`);
+    throw new TypeError(
+      `Expect: 'object' type, Actual: '${typeof object}' type`
+    );
   }
   const rs: string[] = [];
   for (const key in object) {

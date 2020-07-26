@@ -1,5 +1,5 @@
 import stringify from "./stringify";
 declare const _default: {
-    stringify: typeof stringify;
+  stringify: typeof stringify;
 };
 export default _default;
