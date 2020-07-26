@@ -36,7 +36,7 @@ function AxiosClient(axios: AxiosStatic) {
 
     },
     /**
-     * POST 请求，form 表单格式参数
+     * POST 请求，Content-Type 为 application/x-www-form-urlencoded
      */
     postForm(url: string) {
       return async function(data: any, pathVariables?: any) {
@@ -49,7 +49,7 @@ function AxiosClient(axios: AxiosStatic) {
       };
     },
     /**
-     * POST 请求，formData 表单格式参数，文件上传
+     * POST 请求，Content-Type 为 multipart/form-data
      */
     postFormData(url: string) {
       return async function(data: any, pathVariables?: any) {
