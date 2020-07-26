@@ -28,6 +28,9 @@ module.exports = {
       ],
       env: {
         jest: true
+      },
+      rules: {
+        "@typescript-eslint/ban-ts-comment": "off"
       }
     }
   ]
