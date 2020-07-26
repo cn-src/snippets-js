@@ -22,7 +22,7 @@
     "typescript": "^3.9.7"
   },
   "scripts": {
-    "build": "rimraf lib && tsc",
+    "build": "rimraf lib && tsc && yarn run lint ",
     "test": "jest",
     "lint": "eslint ."
   },
