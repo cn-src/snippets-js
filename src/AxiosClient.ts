@@ -11,7 +11,6 @@ type ST = { [propName: string]: string | number | boolean }
  */
 function AxiosClient(axios: AxiosStatic) {
 
-  /* eslint-disable @typescript-eslint/ban-types */
   return {
     /**
      * GET 请求
@@ -29,7 +28,7 @@ function AxiosClient(axios: AxiosStatic) {
     /**
      * POST 请求
      */
-    post<D extends object, V extends ST>(url: string) {
+    post<D extends { [propName: string]: string | number | boolean | ST }, V extends ST>(url: string) {
       return async function(data?: D, pathVariables?: V) {
         const promise = await axios.request({
           url: pathParse(url, pathVariables),
@@ -73,7 +72,7 @@ function AxiosClient(axios: AxiosStatic) {
       };
     }
   };
-  /* eslint-enable @typescript-eslint/ban-types */
+
 }
 
 /**
