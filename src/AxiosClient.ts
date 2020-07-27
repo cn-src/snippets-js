@@ -4,7 +4,12 @@ import stringify from "./qs/stringify";
 /**
  * 属性全部为简单类型的对象
  */
-type ST = { [propName: string]: string | number | boolean }
+type SIMPLE_OBJECT = { [propName: string]: string | number | boolean }
+
+/**
+ * 类似 JSON 一样，属性以及子属性全部为简单类型
+ */
+type JSON_OBJECT = { [propName: string]: string | number | boolean | JSON_OBJECT }
 
 /**
  * 根据 axios 创建一个新的 AxiosClient
@@ -15,7 +20,7 @@ function AxiosClient(axios: AxiosStatic) {
     /**
      * GET 请求
      */
-    get<P extends ST, V extends ST>(url: string) {
+    get<P extends SIMPLE_OBJECT, V extends SIMPLE_OBJECT>(url: string) {
       return async function(params?: P, pathVariables?: V) {
         const promise = await axios.request({
           url: pathParse(url, pathVariables),
@@ -28,7 +33,7 @@ function AxiosClient(axios: AxiosStatic) {
     /**
      * POST 请求
      */
-    post<D extends { [propName: string]: string | number | boolean | ST }, V extends ST>(url: string) {
+    post<D extends JSON_OBJECT, V extends SIMPLE_OBJECT>(url: string) {
       return async function(data?: D, pathVariables?: V) {
         const promise = await axios.request({
           url: pathParse(url, pathVariables),
@@ -41,7 +46,7 @@ function AxiosClient(axios: AxiosStatic) {
     /**
      * POST 请求，Content-Type 为 application/x-www-form-urlencoded
      */
-    postForm<D extends ST, V extends ST>(url: string) {
+    postForm<D extends SIMPLE_OBJECT, V extends SIMPLE_OBJECT>(url: string) {
       return async function(data: D, pathVariables?: V) {
         const promise = await axios.request({
           url: pathParse(url, pathVariables),
@@ -54,7 +59,7 @@ function AxiosClient(axios: AxiosStatic) {
     /**
      * POST 请求，Content-Type 为 multipart/form-data
      */
-    postFormData<D extends { [propName: string]: string | Blob }, V extends ST>(url: string) {
+    postFormData<D extends { [propName: string]: string | Blob }, V extends SIMPLE_OBJECT>(url: string) {
       return async function(data: D, pathVariables?: V) {
         // eslint-disable-next-line no-undef
         const formData = new FormData();
@@ -78,7 +83,7 @@ function AxiosClient(axios: AxiosStatic) {
 /**
  * 路径变量解析
  */
-function pathParse(path: string, pathVariables?: ST) {
+function pathParse(path: string, pathVariables?: SIMPLE_OBJECT) {
   let rs = path;
   if (pathVariables) {
     for (const key in pathVariables) {
