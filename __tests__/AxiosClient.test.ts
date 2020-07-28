@@ -3,10 +3,14 @@ import ServerMock from "mock-http-server";
 import AxiosClient from "@/AxiosClient";
 import FormData from "form-data";
 
+interface DemoModel {
+  p1: number;
+}
+
 let mockServer;
 const client = AxiosClient(axios);
 const api = {
-  getDemo: client.get("http://localhost:6666/{pv}/getDemo"),
+  getDemo: client.get<DemoModel>("http://localhost:6666/{pv}/getDemo"),
   getError: client.get("http://localhost:6666//error"),
   postDemo: client.post("http://localhost:6666/postDemo"),
   postFormDemo: client.postForm("http://localhost:6666/postDemo"),
