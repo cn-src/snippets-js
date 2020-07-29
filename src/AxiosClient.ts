@@ -1,4 +1,4 @@
-import { AxiosStatic } from "axios";
+import { AxiosInstance } from "axios";
 import stringify from "./qs/stringify";
 
 /**
@@ -16,7 +16,7 @@ type JSON_OBJECT = {
 /**
  * 根据 axios 创建一个新的 AxiosClient
  */
-function AxiosClient(axios: AxiosStatic) {
+function AxiosClient(axios: AxiosInstance) {
   return {
     /**
      * GET 请求
