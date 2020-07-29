@@ -1,14 +1,23 @@
 import { AxiosInstance, Method } from "axios";
 import stringify from "./qs/stringify";
 
+export interface AxiosClientConfiguration {
+  /**
+   * 是否提取响应的 data 部分
+   */
+  extractData: boolean;
+}
+
 /**
  * 根据 axios 创建一个新的 AxiosClient
  */
 export default class AxiosClient {
   private readonly axios;
+  private readonly configuration?;
 
-  constructor(axios: AxiosInstance) {
+  constructor(axios: AxiosInstance, configuration?: AxiosClientConfiguration) {
     this.axios = axios;
+    this.configuration = configuration;
   }
 
   request<D, V>(
@@ -17,6 +26,7 @@ export default class AxiosClient {
     dataSerializer?: (D) => string | FormData
   ) {
     const __axios = this.axios;
+    const __configuration = this.configuration;
     return async function (data?: D, pathVariables?: V) {
       let params;
       if ("GET" === method) {
@@ -32,7 +42,7 @@ export default class AxiosClient {
         params,
         data,
       });
-      return promise.data;
+      return __configuration?.extractData === true ? promise.data : promise;
     };
   }
 
