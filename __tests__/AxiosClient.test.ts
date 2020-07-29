@@ -25,6 +25,15 @@ const api = {
   postFormDemo: client.postForm("http://localhost:6666/postDemo"),
   postFormDataDemo: client.postFormData("http://localhost:6666/postDemo"),
   deleteDemo: client.delete("http://localhost:6666/deleteDemo"),
+  deleteDemo2: client.delete("http://localhost:6666/deleteDemo", {
+    beforeRequest() {
+      console.log("deleteDemo2 beforeRequest");
+      return true;
+    },
+    afterResponse() {
+      console.log("deleteDemo2 beforeRequest");
+    },
+  }),
 };
 
 test("get", (done) => {
@@ -62,6 +71,12 @@ test("postFormData", (done) => {
 
 test("delete", (done) => {
   api.deleteDemo().then(function () {
+    done();
+  });
+});
+
+test("delete_2", (done) => {
+  api.deleteDemo2().then(function () {
     done();
   });
 });
