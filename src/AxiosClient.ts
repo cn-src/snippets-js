@@ -27,9 +27,9 @@ export default class AxiosClient {
     const __configuration = this.configuration;
     return async function (data?: AxiosClientRequestData<P, D, V>) {
       const isNext = config.handler?.beforeRequest?.(data);
-      // if (data?.params && config.paramsSerializer) {
-      //   data.params = config.paramsSerializer(data) as any;
-      // }
+      if (data?.data && config.dataSerializer) {
+        data.data = config.dataSerializer(data) as any;
+      }
       if (!isNext) {
         return async function () {
           // empty
