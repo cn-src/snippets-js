@@ -7,6 +7,8 @@ export interface AxiosClientConfiguration {
    */
   extractData?: boolean;
 
+  headers?: any;
+
   /**
    * 执行 GET 之前的处理, 返回 false 则不进行请求
    */
@@ -91,6 +93,7 @@ export default class AxiosClient {
       const promise = await __axios.request({
         url: pathRender(url, pathVariables),
         method,
+        headers: __configuration?.headers,
         params,
         data,
       });
