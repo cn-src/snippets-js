@@ -51,6 +51,7 @@ export default class AxiosClient {
     return this.request<P, never, V>({
       url,
       method: "get",
+      paramsSerializer: stringify,
       handler: handler || {
         beforeRequest: this.configuration?.beforeGet,
         afterResponse: this.configuration?.afterGet,
@@ -123,6 +124,7 @@ export default class AxiosClient {
     return this.request<P, never, V>({
       url,
       method: "delete",
+      paramsSerializer: stringify,
       handler: handler || {
         beforeRequest: this.configuration?.beforeDelete,
         afterResponse: this.configuration?.afterDelete,
