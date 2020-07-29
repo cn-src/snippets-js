@@ -1,91 +1,106 @@
-import { AxiosInstance } from "axios";
+import { AxiosInstance, Method } from "axios";
 import stringify from "./qs/stringify";
 
 /**
  * 属性全部为简单类型的对象
  */
-type SIMPLE_OBJECT = { [propName: string]: string | number | boolean };
+export type Simple = { [propName: string]: string | number | boolean };
 
 /**
  * 类似 JSON 一样，属性以及子属性全部为简单类型
  */
-type JSON_OBJECT = {
-  [propName: string]: string | number | boolean | JSON_OBJECT;
+export type Json = {
+  [propName: string]: string | number | boolean | Json;
 };
+
+export type FormBlob = { [propName: string]: string | Blob };
 
 /**
  * 根据 axios 创建一个新的 AxiosClient
  */
-function AxiosClient(axios: AxiosInstance) {
-  return {
-    /**
-     * GET 请求
-     */
-    get<P = SIMPLE_OBJECT, V = SIMPLE_OBJECT>(url: string) {
-      return async function (params?: P, pathVariables?: V) {
-        const promise = await axios.request({
-          url: pathParse(url, pathVariables),
-          method: "GET",
-          params,
-        });
-        return promise.data;
-      };
-    },
-    /**
-     * POST 请求
-     */
-    post<D = JSON_OBJECT, V = SIMPLE_OBJECT>(url: string) {
-      return async function (data?: D, pathVariables?: V) {
-        const promise = await axios.request({
-          url: pathParse(url, pathVariables),
-          method: "POST",
-          data,
-        });
-        return promise.data;
-      };
-    },
-    /**
-     * POST 请求，Content-Type 为 application/x-www-form-urlencoded
-     */
-    postForm<D = SIMPLE_OBJECT, V = SIMPLE_OBJECT>(url: string) {
-      return async function (data: D, pathVariables?: V) {
-        const promise = await axios.request({
-          url: pathParse(url, pathVariables),
-          method: "POST",
-          data: stringify(data),
-        });
-        return promise.data;
-      };
-    },
-    /**
-     * POST 请求，Content-Type 为 multipart/form-data
-     */
-    postFormData<D = { [propName: string]: string | Blob }, V = SIMPLE_OBJECT>(
-      url: string
-    ) {
-      return async function (data: D, pathVariables?: V) {
-        // eslint-disable-next-line no-undef
-        const formData = new FormData();
-        for (const key in data) {
-          if (Object.prototype.hasOwnProperty.call(data, key)) {
-            formData.append(key, data[key] as any);
-          }
+class AxiosClient {
+  private readonly axios;
+
+  constructor(axios: AxiosInstance) {
+    this.axios = axios;
+  }
+
+  request<D, V>(
+    url: string,
+    method?: Method,
+    dataSerializer?: (D) => string | FormData
+  ) {
+    const __axios = this.axios;
+    return async function (data?: D, pathVariables?: V) {
+      let params;
+      if ("GET" === method) {
+        params = data;
+        data = undefined;
+      }
+      if (dataSerializer && data) {
+        data = dataSerializer(data) as any;
+      }
+      const promise = await __axios.request({
+        url: pathParse(url, pathVariables),
+        method,
+        params,
+        data,
+      });
+      return promise.data;
+    };
+  }
+
+  /**
+   * GET 请求
+   */
+  get<P = Simple, V = Simple>(url: string) {
+    return this.request<P, V>(url, "GET");
+  }
+
+  /**
+   * POST 请求
+   */
+  post<D = Json, V = Simple>(url: string) {
+    return this.request<D, V>(url, "POST");
+  }
+
+  /**
+   * POST 请求，Content-Type 为 application/x-www-form-urlencoded
+   */
+  postForm<D = Simple, V = Simple>(url: string) {
+    return this.request<D, V>(url, "POST", stringify);
+  }
+
+  /**
+   * POST 请求，Content-Type 为 multipart/form-data
+   */
+  postFormData<D = FormBlob, V = Simple>(url: string) {
+    function serializer(data: D) {
+      // eslint-disable-next-line no-undef
+      const formData = new FormData();
+      for (const key in data) {
+        if (Object.prototype.hasOwnProperty.call(data, key)) {
+          formData.append(key, data[key] as any);
         }
-        const promise = await axios.request({
-          url: pathParse(url, pathVariables),
-          method: "POST",
-          data: formData,
-        });
-        return promise.data;
-      };
-    },
-  };
+      }
+      return formData;
+    }
+
+    return this.request<D, V>(url, "POST", serializer);
+  }
+
+  /**
+   * PUT 请求
+   */
+  put<D = Json, V = Simple>(url: string) {
+    return this.request<D, V>(url, "put");
+  }
 }
 
 /**
  * 路径变量解析
  */
-function pathParse<T = SIMPLE_OBJECT>(path: string, pathVariables?: T) {
+function pathParse<T = Simple>(path: string, pathVariables?: T) {
   let rs = path;
   if (pathVariables) {
     for (const key in pathVariables) {

@@ -8,7 +8,7 @@ interface DemoModel {
 }
 
 let mockServer;
-const client = AxiosClient(axios);
+const client = new AxiosClient(axios);
 const api = {
   getDemo: client.get<DemoModel>("http://localhost:6666/{pv}/getDemo"),
   getError: client.get("http://localhost:6666//error"),
