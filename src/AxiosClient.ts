@@ -36,6 +36,8 @@ export default class AxiosClient {
         };
       }
       config.url = pathRender(config.url, data?.pathVariables);
+      config["params"] = data?.params;
+      config["data"] = data?.data;
       const promise = await __axios.request(config);
       config.handler?.afterResponse?.(promise);
       return __configuration?.extractData === false ? promise : promise.data;
