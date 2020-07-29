@@ -8,13 +8,23 @@ interface DemoModel {
 }
 
 let mockServer;
-const client = new AxiosClient(axios);
+const client = new AxiosClient(axios, {
+  beforeDelete() {
+    console.log("## beforeDelete ##");
+    return true;
+  },
+  afterDelete() {
+    console.log("## afterDelete ##");
+  },
+});
+
 const api = {
   getDemo: client.get<DemoModel>("http://localhost:6666/{pv}/getDemo"),
   getError: client.get("http://localhost:6666//error"),
   postDemo: client.post("http://localhost:6666/postDemo"),
   postFormDemo: client.postForm("http://localhost:6666/postDemo"),
   postFormDataDemo: client.postFormData("http://localhost:6666/postDemo"),
+  deleteDemo: client.delete("http://localhost:6666/deleteDemo"),
 };
 
 test("get", (done) => {
@@ -50,6 +60,12 @@ test("postFormData", (done) => {
   });
 });
 
+test("delete", (done) => {
+  api.deleteDemo().then(function () {
+    done();
+  });
+});
+
 beforeEach((done) => {
   mockServer = new ServerMock({ host: "localhost", port: 6666 });
   mockServer.start(done);
@@ -67,6 +83,16 @@ beforeEach((done) => {
   mockServer.on({
     method: "POST",
     path: "/postDemo",
+    reply: {
+      status: 200,
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ hello: "world" }),
+    },
+  });
+
+  mockServer.on({
+    method: "DELETE",
+    path: "/deleteDemo",
     reply: {
       status: 200,
       headers: { "content-type": "application/json" },

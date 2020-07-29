@@ -1,19 +1,34 @@
-import { AxiosInstance, Method } from "axios";
+import { AxiosInstance, AxiosResponse, Method } from "axios";
 import stringify from "./qs/stringify";
 
 export interface AxiosClientConfiguration {
   /**
-   * 是否提取响应的 data 部分
+   * 是否提取响应的 data 部分, 默认提取
    */
-  extractData: boolean;
+  extractData?: boolean;
+
+  /**
+   * 执行 GET 之前的处理, 返回 false 则不进行请求
+   */
+  beforeGet?: () => boolean;
+
+  /**
+   * 执行 DELETE 之前的处理, 返回 false 则不进行请求
+   */
+  beforeDelete?: () => boolean;
+
+  /**
+   * 执行 DELETE 之后的处理
+   */
+  afterDelete?: (AxiosResponse) => void;
 }
 
 /**
  * 根据 axios 创建一个新的 AxiosClient
  */
 export default class AxiosClient {
-  private readonly axios;
-  private readonly configuration?;
+  private readonly axios: AxiosInstance;
+  private readonly configuration?: AxiosClientConfiguration;
 
   constructor(axios: AxiosInstance, configuration?: AxiosClientConfiguration) {
     this.axios = axios;
@@ -22,10 +37,11 @@ export default class AxiosClient {
 
   request<D, V>(
     url: string,
-    method?: Method,
+    method: Method,
+    onResponse?: (AxiosResponse) => void,
     dataSerializer?: (D) => string | FormData
   ) {
-    const __axios = this.axios;
+    const __axios: AxiosInstance = this.axios;
     const __configuration = this.configuration;
     return async function (data?: D, pathVariables?: V) {
       let params;
@@ -42,7 +58,8 @@ export default class AxiosClient {
         params,
         data,
       });
-      return __configuration?.extractData === true ? promise.data : promise;
+      onResponse && onResponse(promise);
+      return __configuration?.extractData === false ? promise : promise.data;
     };
   }
 
@@ -61,17 +78,17 @@ export default class AxiosClient {
   }
 
   /**
-   * POST 请求，Content-Type 为 application/x-www-form-urlencoded
+   * POST 请求, Content-Type 为 application/x-www-form-urlencoded
    */
   postForm<D = Simple, V = Simple>(url: string) {
-    return this.request<D, V>(url, "POST", stringify);
+    return this.request<D, V>(url, "POST", undefined, stringify);
   }
 
   /**
-   * POST 请求，Content-Type 为 multipart/form-data
+   * POST 请求, Content-Type 为 multipart/form-data
    */
   postFormData<D = FormBlob, V = Simple>(url: string) {
-    return this.request<D, V>(url, "POST", formDataSerializer);
+    return this.request<D, V>(url, "POST", undefined, formDataSerializer);
   }
 
   /**
@@ -85,7 +102,12 @@ export default class AxiosClient {
    * DELETE 请求
    */
   delete<D = Json, V = Simple>(url: string) {
-    return this.request<D, V>(url, "delete");
+    if (this.configuration?.beforeDelete?.() === false) {
+      return async function () {
+        // ignore
+      };
+    }
+    return this.request<D, V>(url, "delete", this.configuration?.afterDelete);
   }
 }
 
@@ -121,7 +143,7 @@ export function pathRender<T = Simple>(path: string, pathVariables?: T) {
 export type Simple = { [propName: string]: string | number | boolean };
 
 /**
- * 类似 JSON 一样，属性以及子属性全部为简单类型
+ * 类似 JSON 一样, 属性以及子属性全部为简单类型
  */
 export type Json = {
   [propName: string]: string | number | boolean | Json;
