@@ -15,9 +15,9 @@ import stringify from "./qs/stringify";
  */
 export default class AxiosClient {
   private readonly axios: AxiosInstance;
-  private readonly configuration?: AxiosClientConfiguration;
+  private readonly configuration?: AxiosClientConfig;
 
-  constructor(axios: AxiosInstance, configuration?: AxiosClientConfiguration) {
+  constructor(axios: AxiosInstance, configuration?: AxiosClientConfig) {
     this.axios = axios;
     this.configuration = configuration;
   }
@@ -173,13 +173,11 @@ export type Json = {
 
 export type FormBlob = { [propName: string]: string | Blob };
 
-export interface AxiosClientConfiguration {
+export type AxiosClientConfig = AxiosConfig & {
   /**
    * 是否提取响应的 data 部分, 默认提取
    */
   extractData?: boolean;
-
-  headers?: any;
 
   /**
    * 执行 GET 之前的处理, 返回 false 则不进行请求
@@ -220,25 +218,18 @@ export interface AxiosClientConfiguration {
    * 执行 DELETE 之后的处理
    */
   afterDelete?: (AxiosResponse) => void;
-}
+};
 
 export interface Handler {
   beforeRequest?: (any) => boolean;
   afterResponse?: (AxiosResponse) => void;
 }
 
-export interface AxiosClientRequestConfig {
-  handler: Handler;
-  url: string;
-  method?: Method;
+export interface AxiosConfig {
   baseURL?: string;
   transformRequest?: AxiosTransformer | AxiosTransformer[];
   transformResponse?: AxiosTransformer | AxiosTransformer[];
   headers?: any;
-  // params?: any;
-  paramsSerializer?: (params: any) => string;
-  dataSerializer?: (params: any) => string | FormData;
-  // data?: any;
   timeout?: number;
   timeoutErrorMessage?: string;
   withCredentials?: boolean;
@@ -258,6 +249,14 @@ export interface AxiosClientRequestConfig {
   proxy?: AxiosProxyConfig | false;
   cancelToken?: CancelToken;
 }
+
+export type AxiosClientRequestConfig = AxiosConfig & {
+  handler: Handler;
+  url: string;
+  method?: Method;
+  paramsSerializer?: (params: any) => string;
+  dataSerializer?: (params: any) => string | FormData;
+};
 
 export interface AxiosClientRequestData<P, D, V> {
   pathVariables?: V;
