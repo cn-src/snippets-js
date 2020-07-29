@@ -18,6 +18,26 @@ export interface AxiosClientConfiguration {
   afterGet?: (AxiosResponse) => void;
 
   /**
+   * 执行 POST 之前的处理, 返回 false 则不进行请求
+   */
+  beforePost?: (any) => boolean;
+
+  /**
+   * 执行 POST 之后的处理
+   */
+  afterPost?: (AxiosResponse) => void;
+
+  /**
+   * 执行 PUT 之前的处理, 返回 false 则不进行请求
+   */
+  beforePut?: (any) => boolean;
+
+  /**
+   * 执行 PUT 之后的处理
+   */
+  afterPut?: (AxiosResponse) => void;
+
+  /**
    * 执行 DELETE 之前的处理, 返回 false 则不进行请求
    */
   beforeDelete?: (any) => boolean;
@@ -26,6 +46,11 @@ export interface AxiosClientConfiguration {
    * 执行 DELETE 之后的处理
    */
   afterDelete?: (AxiosResponse) => void;
+}
+
+export interface Handler {
+  beforeRequest?: (any) => boolean;
+  afterResponse?: (AxiosResponse) => void;
 }
 
 /**
@@ -43,9 +68,8 @@ export default class AxiosClient {
   request<D, V>(
     url: string,
     method: Method,
-    dataSerializer?: (D) => string | FormData,
-    beforeRequest?: (any) => boolean,
-    afterResponse?: (AxiosResponse) => void
+    handler?: Handler,
+    dataSerializer?: (D) => string | FormData
   ) {
     const __axios: AxiosInstance = this.axios;
     const __configuration = this.configuration;
@@ -55,7 +79,7 @@ export default class AxiosClient {
         params = data;
         data = undefined;
       }
-      const isNext = beforeRequest?.(data);
+      const isNext = handler?.beforeRequest?.(data);
       if (dataSerializer && data) {
         data = dataSerializer(data) as any;
       }
@@ -70,7 +94,7 @@ export default class AxiosClient {
         params,
         data,
       });
-      afterResponse?.(promise);
+      handler?.afterResponse?.(promise);
       return __configuration?.extractData === false ? promise : promise.data;
     };
   }
@@ -78,54 +102,86 @@ export default class AxiosClient {
   /**
    * GET 请求
    */
-  get<P = Simple, V = Simple>(url: string) {
+  get<P = Simple, V = Simple>(url: string, handler?: Handler) {
     return this.request<P, V>(
       url,
       "GET",
-      undefined,
-      this.configuration?.beforeGet,
-      this.configuration?.beforeGet
+      handler || {
+        beforeRequest: this.configuration?.beforeGet,
+        afterResponse: this.configuration?.afterGet,
+      }
     );
   }
 
   /**
    * POST 请求
    */
-  post<D = Json, V = Simple>(url: string) {
-    return this.request<D, V>(url, "POST");
+  post<D = Json, V = Simple>(url: string, handler?: Handler) {
+    return this.request<D, V>(
+      url,
+      "POST",
+      handler || {
+        beforeRequest: this.configuration?.beforePost,
+        afterResponse: this.configuration?.afterPost,
+      }
+    );
   }
 
   /**
    * POST 请求, Content-Type 为 application/x-www-form-urlencoded
    */
-  postForm<D = Simple, V = Simple>(url: string) {
-    return this.request<D, V>(url, "POST", stringify);
+  postForm<D = Simple, V = Simple>(url: string, handler?: Handler) {
+    return this.request<D, V>(
+      url,
+      "POST",
+      handler || {
+        beforeRequest: this.configuration?.beforePost,
+        afterResponse: this.configuration?.afterPost,
+      },
+      stringify
+    );
   }
 
   /**
    * POST 请求, Content-Type 为 multipart/form-data
    */
-  postFormData<D = FormBlob, V = Simple>(url: string) {
-    return this.request<D, V>(url, "POST", formDataSerializer);
+  postFormData<D = FormBlob, V = Simple>(url: string, handler?: Handler) {
+    return this.request<D, V>(
+      url,
+      "POST",
+      handler || {
+        beforeRequest: this.configuration?.beforePost,
+        afterResponse: this.configuration?.afterPost,
+      },
+      formDataSerializer
+    );
   }
 
   /**
    * PUT 请求
    */
-  put<D = Json, V = Simple>(url: string) {
-    return this.request<D, V>(url, "put");
+  put<D = Json, V = Simple>(url: string, handler?: Handler) {
+    return this.request<D, V>(
+      url,
+      "put",
+      handler || {
+        beforeRequest: this.configuration?.beforePut,
+        afterResponse: this.configuration?.afterPut,
+      }
+    );
   }
 
   /**
    * DELETE 请求
    */
-  delete<D = Json, V = Simple>(url: string) {
+  delete<D = Json, V = Simple>(url: string, handler?: Handler) {
     return this.request<D, V>(
       url,
       "delete",
-      undefined,
-      this.configuration?.beforeDelete,
-      this.configuration?.afterDelete
+      handler || {
+        beforeRequest: this.configuration?.beforeDelete,
+        afterResponse: this.configuration?.afterDelete,
+      }
     );
   }
 }
