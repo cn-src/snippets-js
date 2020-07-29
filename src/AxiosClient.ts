@@ -80,6 +80,13 @@ export default class AxiosClient {
   put<D = Json, V = Simple>(url: string) {
     return this.request<D, V>(url, "put");
   }
+
+  /**
+   * DELETE 请求
+   */
+  delete<D = Json, V = Simple>(url: string) {
+    return this.request<D, V>(url, "delete");
+  }
 }
 
 export function formDataSerializer(data: any) {
