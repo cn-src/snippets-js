@@ -2,23 +2,9 @@ import { AxiosInstance, Method } from "axios";
 import stringify from "./qs/stringify";
 
 /**
- * 属性全部为简单类型的对象
- */
-export type Simple = { [propName: string]: string | number | boolean };
-
-/**
- * 类似 JSON 一样，属性以及子属性全部为简单类型
- */
-export type Json = {
-  [propName: string]: string | number | boolean | Json;
-};
-
-export type FormBlob = { [propName: string]: string | Blob };
-
-/**
  * 根据 axios 创建一个新的 AxiosClient
  */
-class AxiosClient {
+export default class AxiosClient {
   private readonly axios;
 
   constructor(axios: AxiosInstance) {
@@ -41,7 +27,7 @@ class AxiosClient {
         data = dataSerializer(data) as any;
       }
       const promise = await __axios.request({
-        url: pathParse(url, pathVariables),
+        url: pathRender(url, pathVariables),
         method,
         params,
         data,
@@ -75,18 +61,7 @@ class AxiosClient {
    * POST 请求，Content-Type 为 multipart/form-data
    */
   postFormData<D = FormBlob, V = Simple>(url: string) {
-    function serializer(data: D) {
-      // eslint-disable-next-line no-undef
-      const formData = new FormData();
-      for (const key in data) {
-        if (Object.prototype.hasOwnProperty.call(data, key)) {
-          formData.append(key, data[key] as any);
-        }
-      }
-      return formData;
-    }
-
-    return this.request<D, V>(url, "POST", serializer);
+    return this.request<D, V>(url, "POST", formDataSerializer);
   }
 
   /**
@@ -97,10 +72,21 @@ class AxiosClient {
   }
 }
 
+export function formDataSerializer(data: any) {
+  // eslint-disable-next-line no-undef
+  const formData = new FormData();
+  for (const key in data) {
+    if (Object.prototype.hasOwnProperty.call(data, key)) {
+      formData.append(key, data[key] as any);
+    }
+  }
+  return formData;
+}
+
 /**
  * 路径变量解析
  */
-function pathParse<T = Simple>(path: string, pathVariables?: T) {
+export function pathRender<T = Simple>(path: string, pathVariables?: T) {
   let rs = path;
   if (pathVariables) {
     for (const key in pathVariables) {
@@ -112,4 +98,16 @@ function pathParse<T = Simple>(path: string, pathVariables?: T) {
   return rs;
 }
 
-export default AxiosClient;
+/**
+ * 属性全部为简单类型的对象
+ */
+export type Simple = { [propName: string]: string | number | boolean };
+
+/**
+ * 类似 JSON 一样，属性以及子属性全部为简单类型
+ */
+export type Json = {
+  [propName: string]: string | number | boolean | Json;
+};
+
+export type FormBlob = { [propName: string]: string | Blob };
