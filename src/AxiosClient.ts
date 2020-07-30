@@ -41,9 +41,7 @@ export default class AxiosClient {
                 requestData.data = config.dataSerializer(requestData.data) as any;
             }
             if (notNext) {
-                return async function () {
-                    // empty
-                };
+                return;
             }
 
             config.url = pathRender(config.url, requestData?.pathVariables);
