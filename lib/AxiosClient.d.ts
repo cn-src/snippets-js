@@ -113,8 +113,18 @@ export declare type FormBlob = {
     [propName: string]: string | Blob;
 };
 export interface Handler {
-    beforeRequest?: (requestData: any) => boolean;
-    afterResponse?: (requestData: any, response: AxiosResponse) => void;
+    /**
+     * 请求之前的处理，返回 false 则取消请求
+     */
+    preRequest?: (requestData: any) => boolean;
+    /**
+     * 响应成功 then 的处理
+     */
+    onThen?: (requestData: any, response: AxiosResponse) => void;
+    /**
+     * 响应失败 catch 的处理, 不处理取消请求产生的错误
+     */
+    onCatch?: (requestData: any, response: AxiosResponse) => void;
 }
 export interface Handlers {
     onGet?: Handler;
@@ -123,7 +133,14 @@ export interface Handlers {
     onDelete?: Handler;
 }
 export interface AxiosClientConfig {
+    /**
+     * 提取响应的 data 部分
+     */
     extractData?: boolean;
+    /**
+     * 提取 catch 的 data 部分
+     */
+    extractCatchData?: boolean;
     baseURL?: string;
     transformRequest?: AxiosTransformer | AxiosTransformer[];
     transformResponse?: AxiosTransformer | AxiosTransformer[];

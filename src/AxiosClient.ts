@@ -55,10 +55,11 @@ export default class AxiosClient {
                 config.handler?.onThen?.(requestData, promise);
                 return config.extractData === false ? promise : promise.data;
             } catch (e) {
-                config.handler?.onCatch?.(requestData, e);
-                if (!isCancel(e) && !(config.extractData === false)) {
-                    throw e.response.data;
+                if (isCancel(e)) {
+                    throw e;
                 }
+                config.handler?.onCatch?.(requestData, e);
+                throw config.extractData === false ? e : e.response.data;
             }
         };
     }
@@ -215,7 +216,7 @@ export interface Handler {
     onThen?: (requestData, response: AxiosResponse) => void;
 
     /**
-     * 响应失败 catch 的处理
+     * 响应失败 catch 的处理, 不处理取消请求产生的错误
      */
     onCatch?: (requestData, response: AxiosResponse) => void;
 }
