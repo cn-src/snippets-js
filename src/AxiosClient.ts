@@ -249,4 +249,5 @@ export interface AxiosClientRequestData<P, D, V> {
     pathVariables?: V;
     params?: P;
     data?: D;
+    [prop: string]: any;
 }
