@@ -1,162 +1,186 @@
 import {
-  AxiosAdapter,
-  AxiosBasicCredentials,
-  AxiosInstance,
-  AxiosProxyConfig,
-  AxiosTransformer,
-  CancelToken,
-  Method,
-  ResponseType,
+    AxiosAdapter,
+    AxiosBasicCredentials,
+    AxiosInstance,
+    AxiosProxyConfig,
+    AxiosResponse,
+    AxiosTransformer,
+    CancelToken,
+    Method,
+    ResponseType,
 } from "axios";
-import stringify from "./qs/stringify";
 
 /**
  * 根据 axios 创建一个新的 AxiosClient
  */
 export default class AxiosClient {
-  private readonly axios: AxiosInstance;
-  private readonly configuration?: AxiosClientConfig;
+    private readonly axios: AxiosInstance;
+    private readonly handlers?: Handlers;
+    private readonly config?: AxiosClientConfig;
 
-  constructor(axios: AxiosInstance, configuration?: AxiosClientConfig) {
-    this.axios = axios;
-    this.configuration = configuration;
-  }
+    constructor(axios: AxiosInstance, handlers?: Handlers, config?: AxiosClientConfig) {
+        this.axios = axios;
+        this.handlers = handlers;
+        this.config = config;
+    }
 
-  request<P, D, V>(config: AxiosClientRequestConfig) {
-    const __axios: AxiosInstance = this.axios;
-    const __configuration = this.configuration;
-    return async function (data?: AxiosClientRequestData<P, D, V>) {
-      const isNext = config.handler?.beforeRequest?.(data);
-      if (data?.data && config.dataSerializer) {
-        data.data = config.dataSerializer(data) as any;
-      }
-      if (!isNext) {
-        return async function () {
-          // empty
+    request<P, D, V>(config: AxiosClientRequestConfig) {
+        const __axios: AxiosInstance = this.axios;
+        return async function (
+            paramsOrData?: P | D,
+            requestData?: AxiosClientRequestData<P, D, V>
+        ) {
+            requestData = requestData || {};
+            if (["post", "put", "patch"].includes(config.method)) {
+                requestData.data = paramsOrData as D;
+            } else {
+                requestData.params = paramsOrData as P;
+            }
+            const isNext = config.handler?.beforeRequest?.(requestData);
+            if (config.dataSerializer) {
+                requestData.data = config.dataSerializer(requestData.data) as any;
+            }
+            if (!isNext) {
+                return async function () {
+                    // empty
+                };
+            }
+
+            config.url = pathRender(config.url, requestData?.pathVariables);
+            config["params"] = requestData?.params;
+            config["data"] = requestData?.data;
+            config.paramsSerializer = config.paramsSerializer || stringify;
+
+            const promise = await __axios.request(config);
+            config.handler?.afterResponse?.(requestData, promise);
+            return promise;
         };
-      }
-      config.url = pathRender(config.url, data?.pathVariables);
-      config["params"] = data?.params;
-      config["data"] = data?.data;
-      const promise = await __axios.request(config);
-      config.handler?.afterResponse?.(promise);
-      return __configuration?.extractData === false ? promise : promise.data;
-    };
-  }
+    }
 
-  /**
-   * GET 请求
-   */
-  get<P = Simple, V = Simple>(url: string, handler?: Handler) {
-    return this.request<P, never, V>({
-      url,
-      method: "get",
-      paramsSerializer: stringify,
-      handler: handler || {
-        beforeRequest: this.configuration?.beforeGet,
-        afterResponse: this.configuration?.afterGet,
-      },
-    });
-  }
+    /**
+     * GET 请求
+     */
+    get<P = Simple, V = Simple>(url: string, config?: AxiosClientMethodConfig) {
+        const merged = mergeConfig(this.config, config);
+        merged.url = url;
+        merged.method = "get";
+        merged.handler = merged.handler || this.handlers?.get;
+        return this.request<P, never, V>(merged);
+    }
 
-  /**
-   * POST 请求
-   */
-  post<D = Json, V = Simple>(url: string, handler?: Handler) {
-    return this.request<never, D, V>({
-      url,
-      method: "post",
-      handler: handler || {
-        beforeRequest: this.configuration?.beforePost,
-        afterResponse: this.configuration?.afterPost,
-      },
-    });
-  }
+    /**
+     * POST 请求
+     */
+    post<D = Json, V = Simple>(url: string, config?: AxiosClientMethodConfig) {
+        const merged = mergeConfig(this.config, config);
+        merged.url = url;
+        merged.method = "post";
+        merged.handler = merged.handler || this.handlers?.post;
+        return this.request<never, D, V>(merged);
+    }
 
-  /**
-   * POST 请求, Content-Type 为 application/x-www-form-urlencoded
-   */
-  postForm<D = Simple, V = Simple>(url: string, handler?: Handler) {
-    return this.request<never, D, V>({
-      url,
-      method: "post",
-      dataSerializer: stringify,
-      handler: handler || {
-        beforeRequest: this.configuration?.beforePost,
-        afterResponse: this.configuration?.afterPost,
-      },
-    });
-  }
+    /**
+     * POST 请求, Content-Type 为 application/x-www-form-urlencoded
+     */
+    postForm<D = Simple, V = Simple>(url: string, config?: AxiosClientMethodConfig) {
+        (config || ({} as AxiosClientMethodConfig)).dataSerializer = stringify;
+        return this.post<D, V>(url, config);
+    }
 
-  /**
-   * POST 请求, Content-Type 为 multipart/form-data
-   */
-  postFormData<D = FormBlob, V = Simple>(url: string, handler?: Handler) {
-    return this.request<never, D, V>({
-      url,
-      method: "post",
-      dataSerializer: formDataSerializer,
-      handler: handler || {
-        beforeRequest: this.configuration?.beforePost,
-        afterResponse: this.configuration?.afterPost,
-      },
-    });
-  }
+    /**
+     * POST 请求, Content-Type 为 multipart/form-data
+     */
+    postFormData<D = FormBlob, V = Simple>(url: string, config?: AxiosClientMethodConfig) {
+        (config || ({} as AxiosClientMethodConfig)).dataSerializer = formDataSerializer;
+        return this.post<D, V>(url, config);
+    }
 
-  /**
-   * PUT 请求
-   */
-  put<D = Json, V = Simple>(url: string, handler?: Handler) {
-    return this.request<never, D, V>({
-      url,
-      method: "put",
-      handler: handler || {
-        beforeRequest: this.configuration?.beforePut,
-        afterResponse: this.configuration?.afterPut,
-      },
-    });
-  }
+    /**
+     * PUT 请求
+     */
+    put<D = Json, V = Simple>(url: string, config?: AxiosClientMethodConfig) {
+        const merged = mergeConfig(this.config, config);
+        merged.url = url;
+        merged.method = "put";
+        merged.handler = merged.handler || this.handlers?.put;
+        return this.request<never, D, V>(merged);
+    }
 
-  /**
-   * DELETE 请求
-   */
-  delete<P = Simple, V = Simple>(url: string, handler?: Handler) {
-    return this.request<P, never, V>({
-      url,
-      method: "delete",
-      paramsSerializer: stringify,
-      handler: handler || {
-        beforeRequest: this.configuration?.beforeDelete,
-        afterResponse: this.configuration?.afterDelete,
-      },
-    });
-  }
+    /**
+     * DELETE 请求
+     */
+    delete<P = Simple, V = Simple>(url: string, config?: AxiosClientMethodConfig) {
+        const merged = mergeConfig(this.config, config);
+        merged.url = url;
+        merged.method = "delete";
+        merged.handler = merged.handler || this.handlers?.delete;
+        return this.request<P, never, V>(merged);
+    }
+}
+
+/**
+ * 将对象字符串化成 application/x-www-form-urlencoded 所需的格式
+ */
+export function stringify(object: any): string {
+    if (!object) {
+        return "";
+    }
+    if (typeof object !== "object") {
+        throw new TypeError(`Expect: 'object' type, Actual: '${typeof object}' type`);
+    }
+    const rs: string[] = [];
+    for (const key in object) {
+        if (Object.prototype.hasOwnProperty.call(object, key)) {
+            rs.push(`${encodeURIComponent(key)}=${encodeURIComponent(object[key])}`);
+        }
+    }
+    return rs.join("&").replace(/%20/g, "+");
 }
 
 export function formDataSerializer(data: any) {
-  // eslint-disable-next-line no-undef
-  const formData = new FormData();
-  for (const key in data) {
-    if (Object.prototype.hasOwnProperty.call(data, key)) {
-      formData.append(key, data[key] as any);
+    // eslint-disable-next-line no-undef
+    const formData = new FormData();
+    for (const key in data) {
+        if (Object.prototype.hasOwnProperty.call(data, key)) {
+            formData.append(key, data[key] as any);
+        }
     }
-  }
-  return formData;
+    return formData;
 }
 
 /**
  * 路径变量解析
  */
 export function pathRender<T = Simple>(path: string, pathVariables?: T) {
-  let rs = path;
-  if (pathVariables) {
-    for (const key in pathVariables) {
-      if (Object.prototype.hasOwnProperty.call(pathVariables, key)) {
-        rs = path.replace(`{${key}}`, "" + pathVariables[key]);
-      }
+    let rs = path;
+    if (pathVariables) {
+        for (const key in pathVariables) {
+            if (Object.prototype.hasOwnProperty.call(pathVariables, key)) {
+                rs = path.replace(`{${key}}`, "" + pathVariables[key]);
+            }
+        }
     }
-  }
-  return rs;
+    return rs;
+}
+
+export function mergeConfig(
+    clientConfig?: AxiosClientConfig,
+    methodConfig?: AxiosClientMethodConfig
+): AxiosClientRequestConfig {
+    if (!methodConfig) {
+        return (clientConfig as AxiosClientRequestConfig) || {};
+    }
+    for (const mc in methodConfig) {
+        if (
+            Object.prototype.hasOwnProperty.call(methodConfig, mc) &&
+            methodConfig[mc] === undefined &&
+            Object.prototype.hasOwnProperty.call(clientConfig, mc) &&
+            clientConfig?.[mc] !== undefined
+        ) {
+            methodConfig[mc] = clientConfig[mc];
+        }
+    }
+    return methodConfig as AxiosClientRequestConfig;
 }
 
 /**
@@ -168,98 +192,61 @@ export type Simple = { [propName: string]: string | number | boolean };
  * 类似 JSON 一样, 属性以及子属性全部为简单类型
  */
 export type Json = {
-  [propName: string]: string | number | boolean | Json;
+    [propName: string]: string | number | boolean | Json;
 };
 
 export type FormBlob = { [propName: string]: string | Blob };
 
-export type AxiosClientConfig = AxiosConfig & {
-  /**
-   * 是否提取响应的 data 部分, 默认提取
-   */
-  extractData?: boolean;
-
-  /**
-   * 执行 GET 之前的处理, 返回 false 则不进行请求
-   */
-  beforeGet?: (any) => boolean;
-
-  /**
-   * 执行 GET 之后的处理
-   */
-  afterGet?: (AxiosResponse) => void;
-
-  /**
-   * 执行 POST 之前的处理, 返回 false 则不进行请求
-   */
-  beforePost?: (any) => boolean;
-
-  /**
-   * 执行 POST 之后的处理
-   */
-  afterPost?: (AxiosResponse) => void;
-
-  /**
-   * 执行 PUT 之前的处理, 返回 false 则不进行请求
-   */
-  beforePut?: (any) => boolean;
-
-  /**
-   * 执行 PUT 之后的处理
-   */
-  afterPut?: (AxiosResponse) => void;
-
-  /**
-   * 执行 DELETE 之前的处理, 返回 false 则不进行请求
-   */
-  beforeDelete?: (any) => boolean;
-
-  /**
-   * 执行 DELETE 之后的处理
-   */
-  afterDelete?: (AxiosResponse) => void;
-};
-
 export interface Handler {
-  beforeRequest?: (any) => boolean;
-  afterResponse?: (AxiosResponse) => void;
+    beforeRequest?: (requestData) => boolean;
+    afterResponse?: (requestData, response: AxiosResponse) => void;
 }
 
-export interface AxiosConfig {
-  baseURL?: string;
-  transformRequest?: AxiosTransformer | AxiosTransformer[];
-  transformResponse?: AxiosTransformer | AxiosTransformer[];
-  headers?: any;
-  timeout?: number;
-  timeoutErrorMessage?: string;
-  withCredentials?: boolean;
-  adapter?: AxiosAdapter;
-  auth?: AxiosBasicCredentials;
-  responseType?: ResponseType;
-  xsrfCookieName?: string;
-  xsrfHeaderName?: string;
-  onUploadProgress?: (progressEvent: any) => void;
-  onDownloadProgress?: (progressEvent: any) => void;
-  maxContentLength?: number;
-  validateStatus?: (status: number) => boolean;
-  maxRedirects?: number;
-  socketPath?: string | null;
-  httpAgent?: any;
-  httpsAgent?: any;
-  proxy?: AxiosProxyConfig | false;
-  cancelToken?: CancelToken;
+export interface Handlers {
+    get?: Handler;
+    post?: Handler;
+    put?: Handler;
+    delete?: Handler;
 }
 
-export type AxiosClientRequestConfig = AxiosConfig & {
-  handler: Handler;
-  url: string;
-  method?: Method;
-  paramsSerializer?: (params: any) => string;
-  dataSerializer?: (params: any) => string | FormData;
-};
+export interface AxiosClientConfig {
+    baseURL?: string;
+    transformRequest?: AxiosTransformer | AxiosTransformer[];
+    transformResponse?: AxiosTransformer | AxiosTransformer[];
+    headers?: any;
+    timeout?: number;
+    timeoutErrorMessage?: string;
+    withCredentials?: boolean;
+    adapter?: AxiosAdapter;
+    auth?: AxiosBasicCredentials;
+    responseType?: ResponseType;
+    xsrfCookieName?: string;
+    xsrfHeaderName?: string;
+    onUploadProgress?: (progressEvent: any) => void;
+    onDownloadProgress?: (progressEvent: any) => void;
+    maxContentLength?: number;
+    validateStatus?: (status: number) => boolean;
+    maxRedirects?: number;
+    socketPath?: string | null;
+    httpAgent?: any;
+    httpsAgent?: any;
+    proxy?: AxiosProxyConfig | false;
+    cancelToken?: CancelToken;
+}
+
+export interface AxiosClientMethodConfig extends AxiosClientConfig {
+    handler: Handler;
+    paramsSerializer?: (params: any) => string;
+    dataSerializer?: (params: any) => string | FormData;
+}
+
+export interface AxiosClientRequestConfig extends AxiosClientMethodConfig {
+    url: string;
+    method: Method;
+}
 
 export interface AxiosClientRequestData<P, D, V> {
-  pathVariables?: V;
-  params?: P;
-  data?: D;
+    pathVariables?: V;
+    params?: P;
+    data?: D;
 }
