@@ -53,7 +53,7 @@ export default class AxiosClient {
 
             const promise = await __axios.request(config);
             config.handler?.afterResponse?.(requestData, promise);
-            return promise;
+            return config.extractData === false ? promise : promise.data;
         };
     }
 
@@ -210,6 +210,7 @@ export interface Handlers {
 }
 
 export interface AxiosClientConfig {
+    extractData?: boolean;
     baseURL?: string;
     transformRequest?: AxiosTransformer | AxiosTransformer[];
     transformResponse?: AxiosTransformer | AxiosTransformer[];
@@ -249,5 +250,6 @@ export interface AxiosClientRequestData<P, D, V> {
     pathVariables?: V;
     params?: P;
     data?: D;
+
     [prop: string]: any;
 }
