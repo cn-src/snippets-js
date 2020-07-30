@@ -46,9 +46,7 @@ export default class AxiosClient {
             config.paramsSerializer = config.paramsSerializer || stringify;
 
             if (notNext) {
-                const source = axios.CancelToken.source();
-                config.cancelToken = source.token;
-                source.cancel(`Cancel Request: ${config.method} ${config.url}`);
+                throw new axios.Cancel(`Cancel Request: ${config.method} ${config.url}`);
             }
             const promise = await __axios.request(config);
             config.handler?.afterResponse?.(requestData, promise);
