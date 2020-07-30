@@ -22,7 +22,7 @@ const client = new AxiosClient(axios, {
 
 const api = {
     getDemo: client.get<DemoModel>("http://localhost:6666/{pv}/getDemo"),
-    getError: client.get("http://localhost:6666//error"),
+    getError: client.get("http://localhost:6666/error"),
     postDemo: client.post("http://localhost:6666/postDemo"),
     postFormDemo: client.postForm("http://localhost:6666/postDemo"),
     postFormDataDemo: client.postFormData("http://localhost:6666/postDemo"),
@@ -41,25 +41,40 @@ const api = {
 };
 
 test("get", (done) => {
-    api.getDemo({ p1: 1 }, { pathVariables: { pv: "demo" } }).then(function () {
+    api.getDemo({ p1: 1 }, { pathVariables: { pv: "demo" } }).then(function (data) {
+        expect(data).toStrictEqual({ hello: "world" });
         done();
     });
 });
 
+test("error", (done) => {
+    api.getError()
+        .then(function () {
+            done();
+        })
+        .catch(function (data) {
+            expect(data).toStrictEqual({ hello: "world" });
+            done();
+        });
+});
+
 test("post", (done) => {
-    api.postDemo().then(function () {
+    api.postDemo().then(function (data) {
+        expect(data).toStrictEqual({ hello: "world" });
         done();
     });
 });
 
 test("post_HasData", (done) => {
-    api.postDemo({ d1: "d1" }).then(function () {
+    api.postDemo({ d1: "d1" }).then(function (data) {
+        expect(data).toStrictEqual({ hello: "world" });
         done();
     });
 });
 
 test("postForm", (done) => {
-    api.postFormDemo({ d1: "d1" }).then(function () {
+    api.postFormDemo({ d1: "d1" }).then(function (data) {
+        expect(data).toStrictEqual({ hello: "world" });
         done();
     });
 });
@@ -68,19 +83,22 @@ test("postFormData", (done) => {
     // @ts-ignore
     global.FormData = FormData;
 
-    api.postFormDataDemo({ d1: "d1" }).then(function () {
+    api.postFormDataDemo({ d1: "d1" }).then(function (data) {
+        expect(data).toStrictEqual({ hello: "world" });
         done();
     });
 });
 
 test("delete", (done) => {
-    api.deleteDemo().then(function () {
+    api.deleteDemo().then(function (data) {
+        expect(data).toStrictEqual({ hello: "world" });
         done();
     });
 });
 
 test("delete_2", (done) => {
-    api.deleteDemo2().then(function () {
+    api.deleteDemo2().then(function (data) {
+        expect(data).toStrictEqual({ hello: "world" });
         done();
     });
 });
@@ -94,6 +112,15 @@ beforeEach((done) => {
         path: "/demo/getDemo",
         reply: {
             status: 200,
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ hello: "world" }),
+        },
+    });
+    mockServer.on({
+        method: "GET",
+        path: "/error",
+        reply: {
+            status: 400,
             headers: { "content-type": "application/json" },
             body: JSON.stringify({ hello: "world" }),
         },

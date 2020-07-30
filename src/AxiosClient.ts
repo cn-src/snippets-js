@@ -10,6 +10,8 @@ import axios, {
     ResponseType,
 } from "axios";
 
+import isCancel from "axios/lib/cancel/isCancel";
+
 /**
  * 根据 axios 创建一个新的 AxiosClient
  */
@@ -48,9 +50,15 @@ export default class AxiosClient {
             if (notNext) {
                 throw new axios.Cancel(`Cancel Request: ${config.method} ${config.url}`);
             }
-            const promise = await __axios.request(config);
-            config.handler?.afterResponse?.(requestData, promise);
-            return config.extractData === false ? promise : promise.data;
+            try {
+                const promise = await __axios.request(config);
+                config.handler?.afterResponse?.(requestData, promise);
+                return config.extractData === false ? promise : promise.data;
+            } catch (e) {
+                if (!isCancel(e) && !(config.extractData === false)) {
+                    throw e.response.data;
+                }
+            }
         };
     }
 
@@ -207,7 +215,15 @@ export interface Handlers {
 }
 
 export interface AxiosClientConfig {
+    /**
+     * 提取响应的 data 部分
+     */
     extractData?: boolean;
+
+    /**
+     * 提取 catch 的 data 部分
+     */
+    extractCatchData?: boolean;
     baseURL?: string;
     transformRequest?: AxiosTransformer | AxiosTransformer[];
     transformResponse?: AxiosTransformer | AxiosTransformer[];
