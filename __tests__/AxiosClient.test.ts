@@ -8,17 +8,24 @@ interface DemoModel {
 }
 
 let mockServer;
-const client = new AxiosClient(axios, {
-    onDelete: {
-        preRequest() {
-            console.log("## beforeDelete ##");
-            return true;
-        },
-        onThen() {
-            console.log("## afterDelete ##");
+const client = new AxiosClient(
+    axios,
+    {
+        onDelete: {
+            preRequest() {
+                console.log("## beforeDelete ##");
+                return true;
+            },
+            onThen() {
+                console.log("## afterDelete ##");
+            },
         },
     },
-});
+    {
+        extractData: true,
+        extractCatchData: true,
+    }
+);
 
 const api = {
     getDemo: client.get<DemoModel>("http://localhost:6666/{pv}/getDemo"),
