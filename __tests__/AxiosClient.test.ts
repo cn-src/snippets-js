@@ -10,11 +10,11 @@ interface DemoModel {
 let mockServer;
 const client = new AxiosClient(axios, {
     onDelete: {
-        beforeRequest() {
+        preRequest() {
             console.log("## beforeDelete ##");
             return true;
         },
-        afterResponse() {
+        onThen() {
             console.log("## afterDelete ##");
         },
     },
@@ -29,11 +29,11 @@ const api = {
     deleteDemo: client.delete("http://localhost:6666/deleteDemo"),
     deleteDemo2: client.delete("http://localhost:6666/deleteDemo", {
         handler: {
-            beforeRequest(reqData) {
+            preRequest(reqData) {
                 console.log("deleteDemo2 beforeRequest", reqData);
                 return true;
             },
-            afterResponse(reqData) {
+            onThen(reqData) {
                 console.log("deleteDemo2 afterResponse", reqData);
             },
         },

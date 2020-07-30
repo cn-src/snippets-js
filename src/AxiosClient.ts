@@ -38,7 +38,7 @@ export default class AxiosClient {
             } else {
                 requestData.params = paramsOrData as P;
             }
-            const notNext = config.handler?.beforeRequest?.(requestData) === false;
+            const notNext = config.handler?.preRequest?.(requestData) === false;
             if (config.dataSerializer) {
                 requestData.data = config.dataSerializer(requestData.data) as any;
             }
@@ -52,9 +52,10 @@ export default class AxiosClient {
             }
             try {
                 const promise = await __axios.request(config);
-                config.handler?.afterResponse?.(requestData, promise);
+                config.handler?.onThen?.(requestData, promise);
                 return config.extractData === false ? promise : promise.data;
             } catch (e) {
+                config.handler?.onCatch?.(requestData, e);
                 if (!isCancel(e) && !(config.extractData === false)) {
                     throw e.response.data;
                 }
@@ -203,8 +204,20 @@ export type Json = {
 export type FormBlob = { [propName: string]: string | Blob };
 
 export interface Handler {
-    beforeRequest?: (requestData) => boolean;
-    afterResponse?: (requestData, response: AxiosResponse) => void;
+    /**
+     * 请求之前的处理，返回 false 则取消请求
+     */
+    preRequest?: (requestData) => boolean;
+
+    /**
+     * 响应成功 then 的处理
+     */
+    onThen?: (requestData, response: AxiosResponse) => void;
+
+    /**
+     * 响应失败 catch 的处理
+     */
+    onCatch?: (requestData, response: AxiosResponse) => void;
 }
 
 export interface Handlers {
