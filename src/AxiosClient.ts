@@ -1,4 +1,4 @@
-import {
+import axios, {
     AxiosAdapter,
     AxiosBasicCredentials,
     AxiosInstance,
@@ -40,15 +40,16 @@ export default class AxiosClient {
             if (config.dataSerializer) {
                 requestData.data = config.dataSerializer(requestData.data) as any;
             }
-            if (notNext) {
-                return;
-            }
-
             config.url = pathRender(config.url, requestData?.pathVariables);
             config["params"] = requestData?.params;
             config["data"] = requestData?.data;
             config.paramsSerializer = config.paramsSerializer || stringify;
 
+            if (notNext) {
+                const source = axios.CancelToken.source();
+                config.cancelToken = source.token;
+                source.cancel(`Cancel Request: ${config.method} ${config.url}`);
+            }
             const promise = await __axios.request(config);
             config.handler?.afterResponse?.(requestData, promise);
             return config.extractData === false ? promise : promise.data;
