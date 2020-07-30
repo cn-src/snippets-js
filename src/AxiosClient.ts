@@ -36,11 +36,11 @@ export default class AxiosClient {
             } else {
                 requestData.params = paramsOrData as P;
             }
-            const isNext = config.handler?.beforeRequest?.(requestData);
+            const notNext = config.handler?.beforeRequest?.(requestData) === false;
             if (config.dataSerializer) {
                 requestData.data = config.dataSerializer(requestData.data) as any;
             }
-            if (!isNext) {
+            if (notNext) {
                 return async function () {
                     // empty
                 };
