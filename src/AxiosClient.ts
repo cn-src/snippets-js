@@ -64,7 +64,7 @@ export default class AxiosClient {
         const merged = mergeConfig(this.config, config);
         merged.url = url;
         merged.method = "get";
-        merged.handler = merged.handler || this.handlers?.get;
+        merged.handler = merged.handler || this.handlers?.onGet;
         return this.request<P, never, V>(merged);
     }
 
@@ -75,7 +75,7 @@ export default class AxiosClient {
         const merged = mergeConfig(this.config, config);
         merged.url = url;
         merged.method = "post";
-        merged.handler = merged.handler || this.handlers?.post;
+        merged.handler = merged.handler || this.handlers?.onPost;
         return this.request<never, D, V>(merged);
     }
 
@@ -102,7 +102,7 @@ export default class AxiosClient {
         const merged = mergeConfig(this.config, config);
         merged.url = url;
         merged.method = "put";
-        merged.handler = merged.handler || this.handlers?.put;
+        merged.handler = merged.handler || this.handlers?.onPut;
         return this.request<never, D, V>(merged);
     }
 
@@ -113,7 +113,7 @@ export default class AxiosClient {
         const merged = mergeConfig(this.config, config);
         merged.url = url;
         merged.method = "delete";
-        merged.handler = merged.handler || this.handlers?.delete;
+        merged.handler = merged.handler || this.handlers?.onDelete;
         return this.request<P, never, V>(merged);
     }
 }
@@ -168,7 +168,7 @@ export function mergeConfig(
     methodConfig?: AxiosClientMethodConfig
 ): AxiosClientRequestConfig {
     if (!methodConfig) {
-        return (clientConfig as AxiosClientRequestConfig) || {};
+        return (clientConfig || {}) as AxiosClientRequestConfig;
     }
     for (const mc in methodConfig) {
         if (
@@ -203,10 +203,10 @@ export interface Handler {
 }
 
 export interface Handlers {
-    get?: Handler;
-    post?: Handler;
-    put?: Handler;
-    delete?: Handler;
+    onGet?: Handler;
+    onPost?: Handler;
+    onPut?: Handler;
+    onDelete?: Handler;
 }
 
 export interface AxiosClientConfig {

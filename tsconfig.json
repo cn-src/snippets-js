@@ -1,13 +1,13 @@
 {
-  "compilerOptions": {
-    "target": "esnext",
-    "module": "esnext",
-    "strict": true,
-    "noImplicitAny": false,
-    "declaration": true,
-    "moduleResolution": "node",
-    "outDir": "lib"
-  },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules"]
+    "compilerOptions": {
+        "target": "esnext",
+        "module": "esnext",
+        "strict": true,
+        "noImplicitAny": false,
+        "declaration": true,
+        "moduleResolution": "node",
+        "outDir": "lib"
+    },
+    "include": ["src/**/*.ts"],
+    "exclude": ["node_modules"]
 }
