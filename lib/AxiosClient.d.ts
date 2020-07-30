@@ -22,7 +22,7 @@ export default class AxiosClient {
     ): (
         paramsOrData?: P | D | undefined,
         requestData?: AxiosClientRequestData<P, D, V> | undefined
-    ) => Promise<AxiosResponse<any> | (() => Promise<void>)>;
+    ) => Promise<any>;
     /**
      * GET 请求
      */
@@ -32,7 +32,7 @@ export default class AxiosClient {
     ): (
         paramsOrData?: P | undefined,
         requestData?: AxiosClientRequestData<P, never, V> | undefined
-    ) => Promise<AxiosResponse<any> | (() => Promise<void>)>;
+    ) => Promise<any>;
     /**
      * POST 请求
      */
@@ -42,7 +42,7 @@ export default class AxiosClient {
     ): (
         paramsOrData?: D | undefined,
         requestData?: AxiosClientRequestData<never, D, V> | undefined
-    ) => Promise<AxiosResponse<any> | (() => Promise<void>)>;
+    ) => Promise<any>;
     /**
      * POST 请求, Content-Type 为 application/x-www-form-urlencoded
      */
@@ -52,7 +52,7 @@ export default class AxiosClient {
     ): (
         paramsOrData?: D | undefined,
         requestData?: AxiosClientRequestData<never, D, V> | undefined
-    ) => Promise<AxiosResponse<any> | (() => Promise<void>)>;
+    ) => Promise<any>;
     /**
      * POST 请求, Content-Type 为 multipart/form-data
      */
@@ -62,7 +62,7 @@ export default class AxiosClient {
     ): (
         paramsOrData?: D | undefined,
         requestData?: AxiosClientRequestData<never, D, V> | undefined
-    ) => Promise<AxiosResponse<any> | (() => Promise<void>)>;
+    ) => Promise<any>;
     /**
      * PUT 请求
      */
@@ -72,7 +72,7 @@ export default class AxiosClient {
     ): (
         paramsOrData?: D | undefined,
         requestData?: AxiosClientRequestData<never, D, V> | undefined
-    ) => Promise<AxiosResponse<any> | (() => Promise<void>)>;
+    ) => Promise<any>;
     /**
      * DELETE 请求
      */
@@ -82,7 +82,7 @@ export default class AxiosClient {
     ): (
         paramsOrData?: P | undefined,
         requestData?: AxiosClientRequestData<P, never, V> | undefined
-    ) => Promise<AxiosResponse<any> | (() => Promise<void>)>;
+    ) => Promise<any>;
 }
 /**
  * 将对象字符串化成 application/x-www-form-urlencoded 所需的格式
@@ -123,6 +123,7 @@ export interface Handlers {
     onDelete?: Handler;
 }
 export interface AxiosClientConfig {
+    extractData?: boolean;
     baseURL?: string;
     transformRequest?: AxiosTransformer | AxiosTransformer[];
     transformResponse?: AxiosTransformer | AxiosTransformer[];
