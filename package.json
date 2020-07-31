@@ -3,10 +3,9 @@
     "version": "1.0.0",
     "main": "index.js",
     "license": "MIT",
-    "peerDependencies": {
-        "axios": "^0.19.2"
-    },
     "devDependencies": {
+        "axios": "^0.19.2",
+
         "@types/jest": "^26.0.5",
         "@typescript-eslint/eslint-plugin": "^3.7.0",
         "@typescript-eslint/parser": "^3.7.0",
@@ -26,9 +25,6 @@
         "build:full": "yarn run build && yarn run lint && yarn run test",
         "test": "jest",
         "lint": "eslint ."
-    },
-    "dependencies": {
-        "axios": "^0.19.2",
-        "tslib": "^2.0.0"
     }
+
 }

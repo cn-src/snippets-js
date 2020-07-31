@@ -218,7 +218,7 @@ export interface Handler {
     /**
      * 响应失败 catch 的处理, 不处理取消请求产生的错误
      */
-    onCatch?: (requestData, e: AxiosResponse) => void;
+    onCatch?: (requestData, error: AxiosResponse) => void;
 }
 
 export interface Handlers {
