@@ -45,7 +45,6 @@ export default class AxiosClient {
             config.url = pathRender(config.url, requestData?.pathVariables);
             config["params"] = requestData?.params;
             config["data"] = requestData?.data;
-            config.paramsSerializer = config.paramsSerializer || stringify;
 
             if (notNext) {
                 throw new axios.Cancel(`Cancel Request: ${config.method} ${config.url}`);
