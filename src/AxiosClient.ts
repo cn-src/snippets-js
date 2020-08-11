@@ -162,7 +162,7 @@ export function pathRender<T = Simple>(path: string, pathVariables?: T) {
     if (pathVariables) {
         for (const key in pathVariables) {
             if (Object.prototype.hasOwnProperty.call(pathVariables, key)) {
-                rs = path.replace(`{${key}}`, "" + pathVariables[key]);
+                rs = rs.replace(`{${key}}`, "" + pathVariables[key]);
             }
         }
     }
