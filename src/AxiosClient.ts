@@ -27,38 +27,39 @@ export default class AxiosClient {
     }
 
     request<P, D, V>(config: AxiosClientRequestConfig) {
+        const usedConfig = Object.assign({}, config);
         const __axios: AxiosInstance = this.axios;
         return async function (
             paramsOrData?: P | D,
             requestData?: AxiosClientRequestData<P, D, V>
         ) {
             requestData = requestData || {};
-            if (["post", "put", "patch"].includes(config.method)) {
+            if (["post", "put", "patch"].includes(usedConfig.method)) {
                 requestData.data = paramsOrData as D;
             } else {
                 requestData.params = paramsOrData as P;
             }
-            const notNext = config.handler?.preRequest?.(requestData) === false;
-            if (config.dataSerializer) {
-                requestData.data = config.dataSerializer(requestData.data) as any;
+            const notNext = usedConfig.handler?.preRequest?.(requestData) === false;
+            if (usedConfig.dataSerializer) {
+                requestData.data = usedConfig.dataSerializer(requestData.data) as any;
             }
-            config.url = pathRender(config.url, requestData?.pathVariables);
-            config["params"] = requestData?.params;
-            config["data"] = requestData?.data;
+            usedConfig.url = pathRender(usedConfig.url, requestData?.pathVariables);
+            usedConfig["params"] = requestData?.params;
+            usedConfig["data"] = requestData?.data;
 
             if (notNext) {
-                throw new axios.Cancel(`Cancel Request: ${config.method} ${config.url}`);
+                throw new axios.Cancel(`Cancel Request: ${usedConfig.method} ${usedConfig.url}`);
             }
             try {
-                const promise = await __axios.request(config);
-                config.handler?.onThen?.(requestData, promise);
-                return config.extractData === false ? promise : promise.data;
+                const promise = await __axios.request(usedConfig);
+                usedConfig.handler?.onThen?.(requestData, promise);
+                return usedConfig.extractData === false ? promise : promise.data;
             } catch (e) {
                 if (isCancel(e)) {
                     throw e;
                 }
-                config.handler?.onCatch?.(requestData, e);
-                throw config.extractData === false ? e : e.response.data;
+                usedConfig.handler?.onCatch?.(requestData, e);
+                throw usedConfig.extractData === false ? e : e.response.data;
             }
         };
     }
