@@ -90,7 +90,8 @@ export default class AxiosClient {
      * POST 请求, Content-Type 为 application/x-www-form-urlencoded
      */
     postForm<D = Simple, V = Simple>(url: string, config?: AxiosClientMethodConfig) {
-        (config || ({} as AxiosClientMethodConfig)).dataSerializer = stringify;
+        config = config || ({} as AxiosClientMethodConfig);
+        config.dataSerializer = stringify;
         return this.post<D, V>(url, config);
     }
 
@@ -98,7 +99,8 @@ export default class AxiosClient {
      * POST 请求, Content-Type 为 multipart/form-data
      */
     postFormData<D = FormBlob, V = Simple>(url: string, config?: AxiosClientMethodConfig) {
-        (config || ({} as AxiosClientMethodConfig)).dataSerializer = formDataSerializer;
+        config = config || ({} as AxiosClientMethodConfig);
+        config.dataSerializer = formDataSerializer;
         return this.post<D, V>(url, config);
     }
 
