@@ -151,7 +151,12 @@ export function formDataSerializer(data: any) {
     const formData = new FormData();
     for (const key in data) {
         if (Object.prototype.hasOwnProperty.call(data, key)) {
-            formData.append(key, data[key] as any);
+            const value = data[key];
+            if (Array.isArray(value)) {
+                value.forEach((it) => formData.append(key, it as any));
+            } else {
+                formData.append(key, value as any);
+            }
         }
     }
     return formData;
