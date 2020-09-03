@@ -74,6 +74,16 @@ export default class AxiosClient {
         requestData?: AxiosClientRequestData<never, D, V> | undefined
     ) => Promise<any>;
     /**
+     * PATCH 请求
+     */
+    patch<D = Json, V = Simple>(
+        url: string,
+        config?: AxiosClientMethodConfig
+    ): (
+        paramsOrData?: D | undefined,
+        requestData?: AxiosClientRequestData<never, D, V> | undefined
+    ) => Promise<any>;
+    /**
      * DELETE 请求
      */
     delete<P = Simple, V = Simple>(
@@ -130,6 +140,7 @@ export interface Handlers {
     onGet?: Handler;
     onPost?: Handler;
     onPut?: Handler;
+    onPatch?: Handler;
     onDelete?: Handler;
 }
 export interface AxiosClientConfig {
