@@ -116,6 +116,17 @@ export default class AxiosClient {
     }
 
     /**
+     * PATCH 请求
+     */
+    patch<D = Json, V = Simple>(url: string, config?: AxiosClientMethodConfig) {
+        const merged = mergeConfig(this.config, config);
+        merged.url = url;
+        merged.method = "patch";
+        merged.handler = merged.handler || this.handlers?.onPatch;
+        return this.request<never, D, V>(merged);
+    }
+
+    /**
      * DELETE 请求
      */
     delete<P = Simple, V = Simple>(url: string, config?: AxiosClientMethodConfig) {
@@ -232,6 +243,7 @@ export interface Handlers {
     onGet?: Handler;
     onPost?: Handler;
     onPut?: Handler;
+    onPatch?: Handler;
     onDelete?: Handler;
 }
 
