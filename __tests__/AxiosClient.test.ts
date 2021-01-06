@@ -7,7 +7,10 @@ interface DemoModel {
     p1: number;
 }
 
-let mockServer;
+const host = "localhost";
+const port = 9898;
+const protocol = `http://${host}:${port}`;
+const mockServer = new ServerMock({ host, port });
 const client = new AxiosClient(
     axios,
     {
@@ -18,23 +21,23 @@ const client = new AxiosClient(
             },
             onThen() {
                 console.log("## afterDelete ##");
-            },
-        },
+            }
+        }
     },
     {
         extractData: true,
-        extractCatchData: true,
+        extractCatchData: true
     }
 );
 
 const api = {
-    getDemo: client.get<DemoModel>("http://localhost:6666/{pv}/getDemo"),
-    getError: client.get("http://localhost:6666/error"),
-    postDemo: client.post("http://localhost:6666/postDemo"),
-    postFormDemo: client.postForm("http://localhost:6666/postDemo"),
-    postFormDataDemo: client.postFormData("http://localhost:6666/postDemo"),
-    deleteDemo: client.delete("http://localhost:6666/deleteDemo"),
-    deleteDemo2: client.delete("http://localhost:6666/deleteDemo", {
+    getDemo: client.get<DemoModel>(protocol + "/{pv}/getDemo"),
+    getError: client.get(protocol + "/error"),
+    postDemo: client.post(protocol + "/postDemo"),
+    postFormDemo: client.postForm(protocol + "/postDemo"),
+    postFormDataDemo: client.postFormData(protocol + "/postDemo"),
+    deleteDemo: client.delete(protocol + "/deleteDemo"),
+    deleteDemo2: client.delete(protocol + "/deleteDemo", {
         handler: {
             preRequest(reqData) {
                 console.log("deleteDemo2 beforeRequest", reqData);
@@ -42,13 +45,14 @@ const api = {
             },
             onThen(reqData) {
                 console.log("deleteDemo2 afterResponse", reqData);
-            },
-        },
-    }),
+            }
+        }
+    })
 };
 
 test("get", (done) => {
-    api.getDemo({ p1: 1 }, { pathVariables: { pv: "demo" } }).then(function (data) {
+
+    api.getDemo({ p1: 1 }, { pathVariables: { pv: "demo" } }).then(function(data) {
         expect(data).toStrictEqual({ hello: "world" });
         done();
     });
@@ -56,31 +60,31 @@ test("get", (done) => {
 
 test("error", (done) => {
     api.getError()
-        .then(function () {
+        .then(function() {
             done();
         })
-        .catch(function (data) {
-            expect(data).toBe('Not Found');
+        .catch(function(data) {
+            expect(data).toBe("Not Found");
             done();
         });
 });
 
 test("post", (done) => {
-    api.postDemo().then(function (data) {
+    api.postDemo().then(function(data) {
         expect(data).toStrictEqual({ hello: "world" });
         done();
     });
 });
 
 test("post_HasData", (done) => {
-    api.postDemo({ d1: "d1" }).then(function (data) {
+    api.postDemo({ d1: "d1" }).then(function(data) {
         expect(data).toStrictEqual({ hello: "world" });
         done();
     });
 });
 
 test("postForm", (done) => {
-    api.postFormDemo({ d1: "d1" }).then(function (data) {
+    api.postFormDemo({ d1: "d1" }).then(function(data) {
         expect(data).toStrictEqual({ hello: "world" });
         done();
     });
@@ -90,28 +94,27 @@ test("postFormData", (done) => {
     // @ts-ignore
     global.FormData = FormData;
 
-    api.postFormDataDemo({ d1: "d1" }).then(function (data) {
+    api.postFormDataDemo({ d1: "d1" }).then(function(data) {
         expect(data).toStrictEqual({ hello: "world" });
         done();
     });
 });
 
 test("delete", (done) => {
-    api.deleteDemo().then(function (data) {
+    api.deleteDemo().then(function(data) {
         expect(data).toStrictEqual({ hello: "world" });
         done();
     });
 });
 
 test("delete_2", (done) => {
-    api.deleteDemo2().then(function (data) {
+    api.deleteDemo2().then(function(data) {
         expect(data).toStrictEqual({ hello: "world" });
         done();
     });
 });
 
 beforeEach((done) => {
-    mockServer = new ServerMock({ host: "localhost", port: 6666 });
     mockServer.start(done);
 
     mockServer.on({
@@ -120,8 +123,8 @@ beforeEach((done) => {
         reply: {
             status: 200,
             headers: { "content-type": "application/json" },
-            body: JSON.stringify({ hello: "world" }),
-        },
+            body: JSON.stringify({ hello: "world" })
+        }
     });
     mockServer.on({
         method: "GET",
@@ -129,8 +132,8 @@ beforeEach((done) => {
         reply: {
             status: 400,
             headers: { "content-type": "application/json" },
-            body: JSON.stringify({ hello: "world" }),
-        },
+            body: JSON.stringify({ hello: "world" })
+        }
     });
 
     mockServer.on({
@@ -139,8 +142,8 @@ beforeEach((done) => {
         reply: {
             status: 200,
             headers: { "content-type": "application/json" },
-            body: JSON.stringify({ hello: "world" }),
-        },
+            body: JSON.stringify({ hello: "world" })
+        }
     });
 
     mockServer.on({
@@ -149,8 +152,8 @@ beforeEach((done) => {
         reply: {
             status: 200,
             headers: { "content-type": "application/json" },
-            body: JSON.stringify({ hello: "world" }),
-        },
+            body: JSON.stringify({ hello: "world" })
+        }
     });
 });
 
