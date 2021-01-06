@@ -114,7 +114,7 @@ test("delete_2", (done) => {
     });
 });
 
-beforeEach((done) => {
+beforeAll((done) => {
     mockServer.start(done);
 
     mockServer.on({
@@ -157,6 +157,6 @@ beforeEach((done) => {
     });
 });
 
-afterEach((done) => {
+afterAll((done) => {
     mockServer.stop(done);
 });
