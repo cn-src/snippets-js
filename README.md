@@ -1,5 +1,5 @@
 ![GitHub](https://img.shields.io/github/license/cn-src/snippets-js)
-[![Build Status](https://travis-ci.org/cn-src/snippets-js.svg?branch=master)](https://travis-ci.org/cn-src/snippets-js)
+![CI](https://github.com/cn-src/snippets-js/workflows/CI/badge.svg)
 [![codecov](https://codecov.io/gh/cn-src/snippets-js/branch/master/graph/badge.svg)](https://codecov.io/gh/cn-src/snippets-js)
 
 # snippets-js
