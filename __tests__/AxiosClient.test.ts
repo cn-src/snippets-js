@@ -64,7 +64,7 @@ test("error", (done) => {
             done();
         })
         .catch(function(data) {
-            expect(data).toBe("Not Found");
+            expect(data).toStrictEqual({ hello: "world" });
             done();
         });
 });
