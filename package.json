@@ -4,11 +4,10 @@
     "main": "index.js",
     "license": "MIT",
     "devDependencies": {
-        "axios": "^0.19.2",
-
         "@types/jest": "^26.0.5",
         "@typescript-eslint/eslint-plugin": "^3.7.0",
         "@typescript-eslint/parser": "^3.7.0",
+        "axios": "^0.21.1",
         "eslint": "^7.5.0",
         "eslint-config-prettier": "^6.11.0",
         "form-data": "^3.0.0",
@@ -26,5 +25,4 @@
         "test": "jest",
         "lint": "eslint ."
     }
-
 }
