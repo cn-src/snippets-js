@@ -18,8 +18,6 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-        env:
-          CODECOV_TOKEN: ${{secrets.CODECOV_TOKEN}}
       - name: Cache Node.js modules
         uses: actions/cache@v2
         with:
@@ -33,5 +31,7 @@ jobs:
         run: yarn install
       - name: Build
         run: yarn run build:full
-      - name: Test
+      - name: Codecov
+        env:
+          CODECOV_TOKEN: ${{secrets.CODECOV_TOKEN}}
         run: codecov
