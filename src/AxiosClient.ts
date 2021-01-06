@@ -61,9 +61,7 @@ export default class AxiosClient {
                     throw e;
                 }
                 usedConfig.handler?.onCatch?.(requestData, e);
-                // TODO
-                // throw usedConfig.extractData === false ? e : e.response.data;
-                throw e;
+                throw usedConfig.extractData === true && e.response ? e.response.data : e;
             }
         };
     }
