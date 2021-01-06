@@ -19,7 +19,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: Install dependencies
-        run: yarn install
+        run: yarn install --registry https://registry.yarnpkg.com
       - name: Build
         run: yarn run build:full
       - name: Codecov
