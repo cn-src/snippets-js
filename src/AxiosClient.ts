@@ -7,7 +7,7 @@ import axios, {
     AxiosTransformer,
     CancelToken,
     Method,
-    ResponseType
+    ResponseType,
 } from "axios";
 
 import isCancel from "axios/lib/cancel/isCancel";
@@ -28,7 +28,7 @@ export default class AxiosClient {
 
     request<P, D, V>(config: AxiosClientRequestConfig) {
         const __axios: AxiosInstance = this.axios;
-        return async function(
+        return async function (
             paramsOrData?: P | D,
             requestData?: AxiosClientRequestData<P, D, V>
         ) {
