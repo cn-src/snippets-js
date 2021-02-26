@@ -1,6 +1,6 @@
 import axios from "axios";
 import ServerMock from "mock-http-server";
-import AxiosClient from "@/AxiosClient";
+import AxiosClient, { Json } from "@/AxiosClient";
 import FormData from "form-data";
 
 interface DemoModel {
@@ -14,6 +14,8 @@ const mockServer = new ServerMock({ host, port });
 const client = new AxiosClient(
     axios,
     {
+        extractData: true,
+        extractCatchData: true,
         onDelete: {
             preRequest() {
                 console.log("## beforeDelete ##");
@@ -23,15 +25,11 @@ const client = new AxiosClient(
                 console.log("## afterDelete ##");
             }
         }
-    },
-    {
-        extractData: true,
-        extractCatchData: true
     }
 );
 
 const api = {
-    getDemo: client.get<DemoModel>(protocol + "/{pv}/getDemo"),
+    getDemo: client.get<Json, DemoModel>(protocol + "/{pv}/getDemo"),
     getError: client.get(protocol + "/error"),
     postDemo: client.post(protocol + "/postDemo"),
     postFormDemo: client.postForm(protocol + "/postDemo"),
@@ -51,15 +49,19 @@ const api = {
 };
 
 test("get", (done) => {
-
-    api.getDemo({ p1: 1 }, { pathParams: { pv: "demo" } }).then(function(data) {
-        expect(data).toStrictEqual({ hello: "world" });
-        done();
-    });
+    api.getDemo
+        .pathParams({ pv: "demo" })
+        .params({ p1: 1 })
+        .fetch()
+        .then(function(data) {
+            expect(data).toStrictEqual({ hello: "world" });
+            done();
+        });
 });
 
 test("error", (done) => {
-    api.getError()
+    api.getError
+        .fetch()
         .then(function() {
             done();
         })
@@ -70,45 +72,58 @@ test("error", (done) => {
 });
 
 test("post", (done) => {
-    api.postDemo().then(function(data) {
-        expect(data).toStrictEqual({ hello: "world" });
-        done();
-    });
+    api.postDemo
+        .fetch()
+        .then(function(data) {
+            expect(data).toStrictEqual({ hello: "world" });
+            done();
+        });
 });
 
 test("post_HasData", (done) => {
-    api.postDemo({ d1: "d1" }).then(function(data) {
-        expect(data).toStrictEqual({ hello: "world" });
-        done();
-    });
+    api.postDemo
+        .data({ d1: "d1" })
+        .fetch()
+        .then(function(data) {
+            expect(data).toStrictEqual({ hello: "world" });
+            done();
+        });
 });
 
 test("postForm", (done) => {
-    api.postFormDemo({ d1: "d1" }).then(function(data) {
-        expect(data).toStrictEqual({ hello: "world" });
-        done();
-    });
+    api.postFormDemo
+        .data({ d1: "d1" })
+        .fetch()
+        .then(function(data) {
+            expect(data).toStrictEqual({ hello: "world" });
+            done();
+        });
 });
 
 test("postFormData", (done) => {
     // @ts-ignore
     global.FormData = FormData;
 
-    api.postFormDataDemo({ d1: "d1" }).then(function(data) {
-        expect(data).toStrictEqual({ hello: "world" });
-        done();
-    });
+    api.postFormDataDemo
+        .data({ d1: "d1" })
+        .fetch()
+        .then(function(data) {
+            expect(data).toStrictEqual({ hello: "world" });
+            done();
+        });
 });
 
 test("delete", (done) => {
-    api.deleteDemo().then(function(data) {
-        expect(data).toStrictEqual({ hello: "world" });
-        done();
-    });
+    api.deleteDemo
+        .fetch()
+        .then(function(data) {
+            expect(data).toStrictEqual({ hello: "world" });
+            done();
+        });
 });
 
 test("delete_2", (done) => {
-    api.deleteDemo2().then(function(data) {
+    api.deleteDemo2.fetch().then(function(data) {
         expect(data).toStrictEqual({ hello: "world" });
         done();
     });
