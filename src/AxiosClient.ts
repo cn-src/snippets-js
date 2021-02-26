@@ -1,8 +1,4 @@
-import {
-    AxiosInstance,
-    AxiosRequestConfig,
-    AxiosResponse
-} from "axios";
+import { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 import AxiosClientRequest from "./AxiosClientRequest";
 
 /**
@@ -44,7 +40,10 @@ export default class AxiosClient {
     /**
      * POST 请求, Content-Type 为 application/x-www-form-urlencoded
      */
-    postForm<PV = Simple, D = Simple>(url: string, config: AxiosClientRequestConfig<PV, never, D> = {}) {
+    postForm<PV = Simple, D = Simple>(
+        url: string,
+        config: AxiosClientRequestConfig<PV, never, D> = {}
+    ) {
         config.url = url;
         config.method = "post";
         config.dataSerializer = stringify;
@@ -55,7 +54,10 @@ export default class AxiosClient {
     /**
      * POST 请求, Content-Type 为 multipart/form-data
      */
-    postFormData<PV = Simple, D = FormBlob>(url: string, config: AxiosClientRequestConfig<PV, never, D> = {}) {
+    postFormData<PV = Simple, D = FormBlob>(
+        url: string,
+        config: AxiosClientRequestConfig<PV, never, D> = {}
+    ) {
         config.url = url;
         config.method = "post";
         config.dataSerializer = formDataSerializer;
@@ -86,13 +88,15 @@ export default class AxiosClient {
     /**
      * DELETE 请求
      */
-    delete<PV = Simple, P = Simple>(url: string, config: AxiosClientRequestConfig<PV, P, never> = {}) {
+    delete<PV = Simple, P = Simple>(
+        url: string,
+        config: AxiosClientRequestConfig<PV, P, never> = {}
+    ) {
         config.url = url;
         config.method = "delete";
         const merged = mergeConfig(this.config, config);
         return new AxiosClientRequest<PV, P, never>(this.axios, merged);
     }
-
 }
 
 /**
@@ -119,9 +123,9 @@ export function searchParams(params: any) {
         return params;
     }
     const searchParams = new URLSearchParams();
-    Object.keys(params).forEach(function(key) {
+    Object.keys(params).forEach(function (key) {
         if (Array.isArray(params[key])) {
-            Object.keys(params[key]).forEach(function(subKey) {
+            Object.keys(params[key]).forEach(function (subKey) {
                 searchParams.append(key, params[key][subKey]);
             });
         } else {
@@ -162,8 +166,10 @@ export function pathRender<T = Simple>(path: string, pathVariables?: T) {
     return rs;
 }
 
-export function mergeConfig<PV, P, D>(clientConfig?: AxiosClientConfig,
-                                      methodConfig?: AxiosClientRequestConfig<PV, P, D>): AxiosClientRequestConfig<PV, P, D> {
+export function mergeConfig<PV, P, D>(
+    clientConfig?: AxiosClientConfig,
+    methodConfig?: AxiosClientRequestConfig<PV, P, D>
+): AxiosClientRequestConfig<PV, P, D> {
     methodConfig = methodConfig || {};
 
     for (const cc in clientConfig) {
@@ -186,7 +192,6 @@ export function mergeConfig<PV, P, D>(clientConfig?: AxiosClientConfig,
     return methodConfig;
 }
 
-
 /**
  * 属性全部为简单类型的对象
  */
@@ -201,9 +206,15 @@ export type Json = {
 
 export type FormBlob = { [propName: string]: string | Blob };
 
-export type PreRequest<PV, P, D> = (requestData: AxiosClientRequestData<PV, P, D>) => boolean
-export type OnThen<PV, P, D> = (requestData: AxiosClientRequestData<PV, P, D>, response: AxiosResponse) => void;
-export type OnCatch<PV, P, D> = (requestData: AxiosClientRequestData<PV, P, D>, error: AxiosResponse) => void;
+export type PreRequest<PV, P, D> = (requestData: AxiosClientRequestData<PV, P, D>) => boolean;
+export type OnThen<PV, P, D> = (
+    requestData: AxiosClientRequestData<PV, P, D>,
+    response: AxiosResponse
+) => void;
+export type OnCatch<PV, P, D> = (
+    requestData: AxiosClientRequestData<PV, P, D>,
+    error: AxiosResponse
+) => void;
 
 export interface Handler<PV, P, D> {
     /**
@@ -223,7 +234,6 @@ export interface Handler<PV, P, D> {
 }
 
 export interface AxiosClientConfig extends AxiosRequestConfig {
-
     /**
      * 提取响应的 data 部分
      */
@@ -243,8 +253,8 @@ export interface AxiosClientConfig extends AxiosRequestConfig {
 
 export interface AxiosClientRequestConfig<PV, P, D> extends AxiosRequestConfig {
     pathParams?: PV;
-    params?: P,
-    data?: D,
+    params?: P;
+    data?: D;
 
     /**
      * 提取响应的 data 部分

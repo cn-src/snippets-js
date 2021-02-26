@@ -1,98 +1,62 @@
-import {
-    AxiosAdapter,
-    AxiosBasicCredentials,
-    AxiosInstance,
-    AxiosProxyConfig,
-    AxiosResponse,
-    AxiosTransformer,
-    CancelToken,
-    Method,
-    ResponseType,
-} from "axios";
+import { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
+import AxiosClientRequest from "./AxiosClientRequest";
 /**
  * 根据 axios 创建一个新的 AxiosClient
  */
 export default class AxiosClient {
     private readonly axios;
-    private readonly handlers?;
     private readonly config?;
-    constructor(axios: AxiosInstance, handlers?: Handlers, config?: AxiosClientConfig);
-    request<P, D, V>(
-        config: AxiosClientRequestConfig
-    ): (
-        paramsOrData?: P | D | undefined,
-        requestData?: AxiosClientRequestData<P, D, V> | undefined
-    ) => Promise<any>;
+    constructor(axios: AxiosInstance, config?: AxiosClientConfig);
+    request<PV, P, D>(config: AxiosClientRequestConfig<PV, P, D>): AxiosClientRequest<PV, P, D>;
     /**
      * GET 请求
      */
-    get<P = Simple, V = Simple>(
+    get<PV = Simple, P = Simple>(
         url: string,
-        config?: AxiosClientMethodConfig
-    ): (
-        paramsOrData?: P | undefined,
-        requestData?: AxiosClientRequestData<P, never, V> | undefined
-    ) => Promise<any>;
+        config?: AxiosClientRequestConfig<PV, P, never>
+    ): AxiosClientRequest<PV, P, never>;
     /**
      * POST 请求
      */
-    post<D = Json, V = Simple>(
+    post<PV = Simple, D = Json>(
         url: string,
-        config?: AxiosClientMethodConfig
-    ): (
-        paramsOrData?: D | undefined,
-        requestData?: AxiosClientRequestData<never, D, V> | undefined
-    ) => Promise<any>;
+        config?: AxiosClientRequestConfig<PV, never, D>
+    ): AxiosClientRequest<PV, never, D>;
     /**
      * POST 请求, Content-Type 为 application/x-www-form-urlencoded
      */
-    postForm<D = Simple, V = Simple>(
+    postForm<PV = Simple, D = Simple>(
         url: string,
-        config?: AxiosClientMethodConfig
-    ): (
-        paramsOrData?: D | undefined,
-        requestData?: AxiosClientRequestData<never, D, V> | undefined
-    ) => Promise<any>;
+        config?: AxiosClientRequestConfig<PV, never, D>
+    ): AxiosClientRequest<PV, never, D>;
     /**
      * POST 请求, Content-Type 为 multipart/form-data
      */
-    postFormData<D = FormBlob, V = Simple>(
+    postFormData<PV = Simple, D = FormBlob>(
         url: string,
-        config?: AxiosClientMethodConfig
-    ): (
-        paramsOrData?: D | undefined,
-        requestData?: AxiosClientRequestData<never, D, V> | undefined
-    ) => Promise<any>;
+        config?: AxiosClientRequestConfig<PV, never, D>
+    ): AxiosClientRequest<PV, never, D>;
     /**
      * PUT 请求
      */
-    put<D = Json, V = Simple>(
+    put<PV = Simple, D = Json>(
         url: string,
-        config?: AxiosClientMethodConfig
-    ): (
-        paramsOrData?: D | undefined,
-        requestData?: AxiosClientRequestData<never, D, V> | undefined
-    ) => Promise<any>;
+        config?: AxiosClientRequestConfig<PV, never, D>
+    ): AxiosClientRequest<PV, never, D>;
     /**
      * PATCH 请求
      */
-    patch<D = Json, V = Simple>(
+    patch<PV = Simple, D = Json>(
         url: string,
-        config?: AxiosClientMethodConfig
-    ): (
-        paramsOrData?: D | undefined,
-        requestData?: AxiosClientRequestData<never, D, V> | undefined
-    ) => Promise<any>;
+        config?: AxiosClientRequestConfig<PV, never, D>
+    ): AxiosClientRequest<PV, never, D>;
     /**
      * DELETE 请求
      */
-    delete<P = Simple, V = Simple>(
+    delete<PV = Simple, P = Simple>(
         url: string,
-        config?: AxiosClientMethodConfig
-    ): (
-        paramsOrData?: P | undefined,
-        requestData?: AxiosClientRequestData<P, never, V> | undefined
-    ) => Promise<any>;
+        config?: AxiosClientRequestConfig<PV, P, never>
+    ): AxiosClientRequest<PV, P, never>;
 }
 /**
  * 将对象字符串化成 application/x-www-form-urlencoded 所需的格式
@@ -104,10 +68,10 @@ export declare function formDataSerializer(data: any): FormData;
  * 路径变量解析
  */
 export declare function pathRender<T = Simple>(path: string, pathVariables?: T): string;
-export declare function mergeConfig(
+export declare function mergeConfig<PV, P, D>(
     clientConfig?: AxiosClientConfig,
-    methodConfig?: AxiosClientMethodConfig
-): AxiosClientRequestConfig;
+    methodConfig?: AxiosClientRequestConfig<PV, P, D>
+): AxiosClientRequestConfig<PV, P, D>;
 /**
  * 属性全部为简单类型的对象
  */
@@ -123,28 +87,32 @@ export declare type Json = {
 export declare type FormBlob = {
     [propName: string]: string | Blob;
 };
-export interface Handler {
+export declare type PreRequest<PV, P, D> = (
+    requestData: AxiosClientRequestData<PV, P, D>
+) => boolean;
+export declare type OnThen<PV, P, D> = (
+    requestData: AxiosClientRequestData<PV, P, D>,
+    response: AxiosResponse
+) => void;
+export declare type OnCatch<PV, P, D> = (
+    requestData: AxiosClientRequestData<PV, P, D>,
+    error: AxiosResponse
+) => void;
+export interface Handler<PV, P, D> {
     /**
      * 请求之前的处理，返回 false 则取消请求
      */
-    preRequest?: (requestData: any) => boolean;
+    preRequest?: PreRequest<PV, P, D>;
     /**
      * 响应成功 then 的处理
      */
-    onThen?: (requestData: any, response: AxiosResponse) => void;
+    onThen?: OnThen<PV, P, D>;
     /**
      * 响应失败 catch 的处理, 不处理取消请求产生的错误
      */
-    onCatch?: (requestData: any, error: AxiosResponse) => void;
+    onCatch?: OnCatch<PV, P, D>;
 }
-export interface Handlers {
-    onGet?: Handler;
-    onPost?: Handler;
-    onPut?: Handler;
-    onPatch?: Handler;
-    onDelete?: Handler;
-}
-export interface AxiosClientConfig {
+export interface AxiosClientConfig extends AxiosRequestConfig {
     /**
      * 提取响应的 data 部分
      */
@@ -153,40 +121,40 @@ export interface AxiosClientConfig {
      * 提取 catch 的 data 部分
      */
     extractCatchData?: boolean;
-    baseURL?: string;
-    transformRequest?: AxiosTransformer | AxiosTransformer[];
-    transformResponse?: AxiosTransformer | AxiosTransformer[];
-    headers?: any;
-    timeout?: number;
-    timeoutErrorMessage?: string;
-    withCredentials?: boolean;
-    adapter?: AxiosAdapter;
-    auth?: AxiosBasicCredentials;
-    responseType?: ResponseType;
-    xsrfCookieName?: string;
-    xsrfHeaderName?: string;
-    onUploadProgress?: (progressEvent: any) => void;
-    onDownloadProgress?: (progressEvent: any) => void;
-    maxContentLength?: number;
-    validateStatus?: (status: number) => boolean;
-    maxRedirects?: number;
-    socketPath?: string | null;
-    httpAgent?: any;
-    httpsAgent?: any;
-    proxy?: AxiosProxyConfig | false;
-    cancelToken?: CancelToken;
+    onGet?: Handler<any, any, any>;
+    onPost?: Handler<any, any, any>;
+    onPut?: Handler<any, any, any>;
+    onPatch?: Handler<any, any, any>;
+    onDelete?: Handler<any, any, any>;
 }
-export interface AxiosClientMethodConfig extends AxiosClientConfig {
-    handler: Handler;
-    paramsSerializer?: (params: any) => string;
+export interface AxiosClientRequestConfig<PV, P, D> extends AxiosRequestConfig {
+    pathParams?: PV;
+    params?: P;
+    data?: D;
+    /**
+     * 提取响应的 data 部分
+     */
+    extractData?: boolean;
+    /**
+     * 提取 catch 的 data 部分
+     */
+    extractCatchData?: boolean;
     dataSerializer?: (params: any) => string | FormData;
+    /**
+     * 请求之前的处理，返回 false 则取消请求
+     */
+    preRequest?: PreRequest<PV, P, D>;
+    /**
+     * 响应成功 then 的处理
+     */
+    onThen?: OnThen<PV, P, D>;
+    /**
+     * 响应失败 catch 的处理, 不处理取消请求产生的错误
+     */
+    onCatch?: OnCatch<PV, P, D>;
 }
-export interface AxiosClientRequestConfig extends AxiosClientMethodConfig {
-    url: string;
-    method: Method;
-}
-export interface AxiosClientRequestData<P, D, V> {
-    pathVariables?: V;
+export interface AxiosClientRequestData<PV, P, D> {
+    pathParams?: PV;
     params?: P;
     data?: D;
     [prop: string]: any;
