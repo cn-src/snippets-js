@@ -52,7 +52,7 @@ const api = {
 
 test("get", (done) => {
 
-    api.getDemo({ p1: 1 }, { pathVariables: { pv: "demo" } }).then(function(data) {
+    api.getDemo({ p1: 1 }, { pathParams: { pv: "demo" } }).then(function(data) {
         expect(data).toStrictEqual({ hello: "world" });
         done();
     });

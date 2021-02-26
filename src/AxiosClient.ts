@@ -45,7 +45,7 @@ export default class AxiosClient {
             if (usedConfig.dataSerializer) {
                 requestData.data = usedConfig.dataSerializer(requestData.data) as any;
             }
-            usedConfig.url = pathRender(usedConfig.url, requestData?.pathVariables);
+            usedConfig.url = pathRender(usedConfig.url, requestData?.pathParams);
             usedConfig["params"] = searchParams(requestData?.params);
             usedConfig["data"] = requestData?.data;
 
@@ -312,7 +312,7 @@ export interface AxiosClientRequestConfig extends AxiosClientMethodConfig {
 }
 
 export interface AxiosClientRequestData<P, D, V> {
-    pathVariables?: V;
+    pathParams?: V;
     params?: P;
     data?: D;
 
