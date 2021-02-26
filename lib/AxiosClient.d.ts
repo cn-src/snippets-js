@@ -7,56 +7,56 @@ export default class AxiosClient {
     private readonly axios;
     private readonly config?;
     constructor(axios: AxiosInstance, config?: AxiosClientConfig);
-    request<PV, P, D>(config: AxiosClientRequestConfig<PV, P, D>): AxiosClientRequest<PV, P, D>;
+    request<D, PV, P>(config: AxiosClientRequestConfig<D, PV, P>): AxiosClientRequest<D, PV, P>;
     /**
      * GET 请求
      */
-    get<PV = Simple, P = Simple>(
+    get<P = Simple, PV = Simple>(
         url: string,
-        config?: AxiosClientRequestConfig<PV, P, never>
-    ): AxiosClientRequest<PV, P, never>;
+        config?: AxiosClientRequestConfig<never, PV, P>
+    ): AxiosClientRequest<never, PV, P>;
     /**
      * POST 请求
      */
-    post<PV = Simple, D = Json>(
+    post<D = Json, PV = Simple>(
         url: string,
-        config?: AxiosClientRequestConfig<PV, never, D>
-    ): AxiosClientRequest<PV, never, D>;
+        config?: AxiosClientRequestConfig<D, PV, never>
+    ): AxiosClientRequest<D, PV, never>;
     /**
      * POST 请求, Content-Type 为 application/x-www-form-urlencoded
      */
-    postForm<PV = Simple, D = Simple>(
+    postForm<D = Simple, PV = Simple>(
         url: string,
-        config?: AxiosClientRequestConfig<PV, never, D>
-    ): AxiosClientRequest<PV, never, D>;
+        config?: AxiosClientRequestConfig<D, PV, never>
+    ): AxiosClientRequest<D, PV, never>;
     /**
      * POST 请求, Content-Type 为 multipart/form-data
      */
-    postFormData<PV = Simple, D = FormBlob>(
+    postFormData<D = FormBlob, PV = Simple>(
         url: string,
-        config?: AxiosClientRequestConfig<PV, never, D>
-    ): AxiosClientRequest<PV, never, D>;
+        config?: AxiosClientRequestConfig<D, PV, never>
+    ): AxiosClientRequest<D, PV, never>;
     /**
      * PUT 请求
      */
-    put<PV = Simple, D = Json>(
+    put<D = Json, PV = Simple>(
         url: string,
-        config?: AxiosClientRequestConfig<PV, never, D>
-    ): AxiosClientRequest<PV, never, D>;
+        config?: AxiosClientRequestConfig<D, PV, never>
+    ): AxiosClientRequest<D, PV, never>;
     /**
      * PATCH 请求
      */
-    patch<PV = Simple, D = Json>(
+    patch<D = Json, PV = Simple>(
         url: string,
-        config?: AxiosClientRequestConfig<PV, never, D>
-    ): AxiosClientRequest<PV, never, D>;
+        config?: AxiosClientRequestConfig<D, PV, never>
+    ): AxiosClientRequest<D, PV, never>;
     /**
      * DELETE 请求
      */
-    delete<PV = Simple, P = Simple>(
+    delete<P = Simple, PV = Simple>(
         url: string,
-        config?: AxiosClientRequestConfig<PV, P, never>
-    ): AxiosClientRequest<PV, P, never>;
+        config?: AxiosClientRequestConfig<never, PV, P>
+    ): AxiosClientRequest<never, PV, P>;
 }
 /**
  * 将对象字符串化成 application/x-www-form-urlencoded 所需的格式
@@ -68,49 +68,53 @@ export declare function formDataSerializer(data: any): FormData;
  * 路径变量解析
  */
 export declare function pathRender<T = Simple>(path: string, pathVariables?: T): string;
-export declare function mergeConfig<PV, P, D>(
+export declare function mergeConfig<D, PV, P>(
     clientConfig?: AxiosClientConfig,
-    methodConfig?: AxiosClientRequestConfig<PV, P, D>
-): AxiosClientRequestConfig<PV, P, D>;
+    methodConfig?: AxiosClientRequestConfig<D, PV, P>
+): AxiosClientRequestConfig<D, PV, P>;
+/**
+ * 原始类型以及其数组类型
+ */
+export declare type Primitive = string | number | boolean | [string] | [number] | [boolean];
 /**
  * 属性全部为简单类型的对象
  */
 export declare type Simple = {
-    [propName: string]: string | number | boolean;
+    [propName: string]: Primitive;
 };
 /**
  * 类似 JSON 一样, 属性以及子属性全部为简单类型
  */
 export declare type Json = {
-    [propName: string]: string | number | boolean | Json;
+    [propName: string]: Primitive | Json;
 };
 export declare type FormBlob = {
     [propName: string]: string | Blob;
 };
-export declare type PreRequest<PV, P, D> = (
-    requestData: AxiosClientRequestData<PV, P, D>
+export declare type PreRequest<D, PV, P> = (
+    requestData: AxiosClientRequestData<D, PV, P>
 ) => boolean;
-export declare type OnThen<PV, P, D> = (
-    requestData: AxiosClientRequestData<PV, P, D>,
+export declare type OnThen<D, PV, P> = (
+    requestData: AxiosClientRequestData<D, PV, P>,
     response: AxiosResponse
 ) => void;
-export declare type OnCatch<PV, P, D> = (
-    requestData: AxiosClientRequestData<PV, P, D>,
+export declare type OnCatch<D, PV, P> = (
+    requestData: AxiosClientRequestData<D, PV, P>,
     error: AxiosResponse
 ) => void;
-export interface Handler<PV, P, D> {
+export interface Handler<D, PV, P> {
     /**
      * 请求之前的处理，返回 false 则取消请求
      */
-    preRequest?: PreRequest<PV, P, D>;
+    preRequest?: PreRequest<D, PV, P>;
     /**
      * 响应成功 then 的处理
      */
-    onThen?: OnThen<PV, P, D>;
+    onThen?: OnThen<D, PV, P>;
     /**
      * 响应失败 catch 的处理, 不处理取消请求产生的错误
      */
-    onCatch?: OnCatch<PV, P, D>;
+    onCatch?: OnCatch<D, PV, P>;
 }
 export interface AxiosClientConfig extends AxiosRequestConfig {
     /**
@@ -127,7 +131,7 @@ export interface AxiosClientConfig extends AxiosRequestConfig {
     onPatch?: Handler<any, any, any>;
     onDelete?: Handler<any, any, any>;
 }
-export interface AxiosClientRequestConfig<PV, P, D> extends AxiosRequestConfig {
+export interface AxiosClientRequestConfig<D, PV, P> extends AxiosRequestConfig {
     pathParams?: PV;
     params?: P;
     data?: D;
@@ -139,21 +143,22 @@ export interface AxiosClientRequestConfig<PV, P, D> extends AxiosRequestConfig {
      * 提取 catch 的 data 部分
      */
     extractCatchData?: boolean;
-    dataSerializer?: (params: any) => string | FormData;
+    dataSerializer?: (data: D) => string | FormData;
+    paramsSerializer?: (params: P) => string;
     /**
      * 请求之前的处理，返回 false 则取消请求
      */
-    preRequest?: PreRequest<PV, P, D>;
+    preRequest?: PreRequest<D, PV, P>;
     /**
      * 响应成功 then 的处理
      */
-    onThen?: OnThen<PV, P, D>;
+    onThen?: OnThen<D, PV, P>;
     /**
      * 响应失败 catch 的处理, 不处理取消请求产生的错误
      */
-    onCatch?: OnCatch<PV, P, D>;
+    onCatch?: OnCatch<D, PV, P>;
 }
-export interface AxiosClientRequestData<PV, P, D> {
+export interface AxiosClientRequestData<D, PV, P> {
     pathParams?: PV;
     params?: P;
     data?: D;

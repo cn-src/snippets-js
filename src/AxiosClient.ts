@@ -42,8 +42,8 @@ export default class AxiosClient {
      */
     postForm<D = Simple, PV = Simple>(
         url: string,
-        config: AxiosClientRequestConfig<D, PV, never> = {}) {
-
+        config: AxiosClientRequestConfig<D, PV, never> = {}
+    ) {
         config.url = url;
         config.method = "post";
         config.dataSerializer = stringify;
@@ -56,8 +56,8 @@ export default class AxiosClient {
      */
     postFormData<D = FormBlob, PV = Simple>(
         url: string,
-        config: AxiosClientRequestConfig<D, PV, never> = {}) {
-
+        config: AxiosClientRequestConfig<D, PV, never> = {}
+    ) {
         config.url = url;
         config.method = "post";
         config.dataSerializer = formDataSerializer;
@@ -90,7 +90,8 @@ export default class AxiosClient {
      */
     delete<P = Simple, PV = Simple>(
         url: string,
-        config: AxiosClientRequestConfig<never, PV, P> = {}) {
+        config: AxiosClientRequestConfig<never, PV, P> = {}
+    ) {
         config.url = url;
         config.method = "delete";
         const merged = mergeConfig(this.config, config);
@@ -122,9 +123,9 @@ export function searchParams(params: any) {
         return params;
     }
     const searchParams = new URLSearchParams();
-    Object.keys(params).forEach(function(key) {
+    Object.keys(params).forEach(function (key) {
         if (Array.isArray(params[key])) {
-            Object.keys(params[key]).forEach(function(subKey) {
+            Object.keys(params[key]).forEach(function (subKey) {
                 searchParams.append(key, params[key][subKey]);
             });
         } else {
@@ -194,7 +195,7 @@ export function mergeConfig<D, PV, P>(
 /**
  * 原始类型以及其数组类型
  */
-export type Primitive = string | number | boolean | [string] | [number] | [boolean]
+export type Primitive = string | number | boolean | [string] | [number] | [boolean];
 
 /**
  * 属性全部为简单类型的对象
