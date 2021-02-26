@@ -10,12 +10,16 @@
 
 - assert
   - 参数校验
-- qs/stringify
-  - `application/x-www-form-urlencoded` 格式的字符串化
 - AxiosClient
   - axios 简单封装
 
 # AxiosClient
+特性
+* 支持配置项与参数分离：比如可以将 URL 和传入的参数分开，便于集中式管理 API。
+* 支持回调函数：比如 delete 请求时，可自定义请求前，后，异常时的处理。
+* 支持自动提取响应结果的 data。
+* 支持链式传参
+* 支持参数自动处理，比如将 js 对象转换成 FormData，相同 key 参数多值情况。
 
 AxiosClient 构造函数支持3个参数:
 
