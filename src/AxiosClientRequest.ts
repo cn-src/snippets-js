@@ -9,37 +9,37 @@ import {
 
 import isAxiosCancel from "axios/lib/cancel/isCancel";
 
-export default class AxiosClientRequest<PV, P, D> {
+export default class AxiosClientRequest<D, PV, P> {
     private readonly axios: AxiosInstance;
-    private readonly config: AxiosClientRequestConfig<PV, P, D>;
+    private readonly config: AxiosClientRequestConfig<D, PV, P>;
 
     private _pathParams?: PV;
     private _params?: P;
     private _data?: D;
 
-    constructor(axios: AxiosInstance, config: AxiosClientRequestConfig<PV, P, D>) {
+    constructor(axios: AxiosInstance, config: AxiosClientRequestConfig<D, PV, P>) {
         this.axios = axios;
         this.config = config;
     }
 
-    pathParams(pathParams: PV): AxiosClientRequest<PV, P, D> {
+    pathParams(pathParams: PV): AxiosClientRequest<D, PV, P> {
         this._pathParams = pathParams;
         return this;
     }
 
-    data(data: D): AxiosClientRequest<PV, P, D> {
+    data(data: D): AxiosClientRequest<D, PV, P> {
         this._data = data;
         return this;
     }
 
-    params(params: P): AxiosClientRequest<PV, P, D> {
+    params(params: P): AxiosClientRequest<D, PV, P> {
         this._params = params;
         return this;
     }
 
     async fetch() {
         const usedConfig = Object.assign({}, this.config);
-        const requestData: AxiosClientRequestData<PV, P, D> = {
+        const requestData: AxiosClientRequestData<D, PV, P> = {
             pathParams: this._pathParams,
             params: this._params,
             data: this._data,
