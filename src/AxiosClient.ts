@@ -123,9 +123,9 @@ export function searchParams(params: any) {
         return params;
     }
     const searchParams = new URLSearchParams();
-    Object.keys(params).forEach(function (key) {
+    Object.keys(params).forEach(function(key) {
         if (Array.isArray(params[key])) {
-            Object.keys(params[key]).forEach(function (subKey) {
+            Object.keys(params[key]).forEach(function(subKey) {
                 searchParams.append(key, params[key][subKey]);
             });
         } else {
@@ -193,15 +193,20 @@ export function mergeConfig<PV, P, D>(
 }
 
 /**
+ * 原始类型以及其数组类型
+ */
+export type Primitive = string | number | boolean | [string] | [number] | [boolean]
+
+/**
  * 属性全部为简单类型的对象
  */
-export type Simple = { [propName: string]: string | number | boolean };
+export type Simple = { [propName: string]: Primitive };
 
 /**
  * 类似 JSON 一样, 属性以及子属性全部为简单类型
  */
 export type Json = {
-    [propName: string]: string | number | boolean | Json;
+    [propName: string]: Primitive | Json;
 };
 
 export type FormBlob = { [propName: string]: string | Blob };
