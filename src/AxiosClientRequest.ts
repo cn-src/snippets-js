@@ -3,12 +3,12 @@ import axios, { AxiosInstance } from "axios";
 import {
     AxiosClientRequestConfig,
     AxiosClientRequestData,
-    OnCatch, OnThen, pathRender, PreRequest, searchParams
+    pathRender, searchParams
 } from "./AxiosClient";
 
 import isAxiosCancel from "axios/lib/cancel/isCancel";
 
-export default class AxiosClientRequestBuilder<PV, P, D> {
+export default class AxiosClientRequest<PV, P, D> {
     private readonly axios: AxiosInstance;
     private readonly config: AxiosClientRequestConfig<PV, P, D>;
 
@@ -21,17 +21,17 @@ export default class AxiosClientRequestBuilder<PV, P, D> {
         this.config = config;
     }
 
-    pathParams(pathParams: PV): AxiosClientRequestBuilder<PV, P, D> {
+    pathParams(pathParams: PV): AxiosClientRequest<PV, P, D> {
         this._pathParams = pathParams;
         return this;
     }
 
-    data(data: D): AxiosClientRequestBuilder<PV, P, D> {
+    data(data: D): AxiosClientRequest<PV, P, D> {
         this._data = data;
         return this;
     }
 
-    params(params: P): AxiosClientRequestBuilder<PV, P, D> {
+    params(params: P): AxiosClientRequest<PV, P, D> {
         this._params = params;
         return this;
     }

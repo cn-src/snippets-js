@@ -3,7 +3,7 @@ import {
     AxiosRequestConfig,
     AxiosResponse
 } from "axios";
-import AxiosClientRequestBuilder from "./AxiosClientRequestBuilder";
+import AxiosClientRequest from "./AxiosClientRequest";
 
 /**
  * 根据 axios 创建一个新的 AxiosClient
@@ -18,7 +18,7 @@ export default class AxiosClient {
     }
 
     request<PV, P, D>(config: AxiosClientRequestConfig<PV, P, D>) {
-        return new AxiosClientRequestBuilder<PV, P, D>(this.axios, mergeConfig(this.config, config));
+        return new AxiosClientRequest<PV, P, D>(this.axios, mergeConfig(this.config, config));
     }
 
     /**
@@ -28,7 +28,7 @@ export default class AxiosClient {
         config.method = "get";
         config.url = url;
         const merged = mergeConfig(this.config, config);
-        return new AxiosClientRequestBuilder<PV, P, never>(this.axios, merged);
+        return new AxiosClientRequest<PV, P, never>(this.axios, merged);
     }
 
     /**
@@ -38,7 +38,7 @@ export default class AxiosClient {
         config.url = url;
         config.method = "post";
         const merged = mergeConfig(this.config, config);
-        return new AxiosClientRequestBuilder<PV, never, D>(this.axios, merged);
+        return new AxiosClientRequest<PV, never, D>(this.axios, merged);
     }
 
     /**
@@ -49,7 +49,7 @@ export default class AxiosClient {
         config.method = "post";
         config.dataSerializer = stringify;
         const merged = mergeConfig(this.config, config);
-        return new AxiosClientRequestBuilder<PV, never, D>(this.axios, merged);
+        return new AxiosClientRequest<PV, never, D>(this.axios, merged);
     }
 
     /**
@@ -60,7 +60,7 @@ export default class AxiosClient {
         config.method = "post";
         config.dataSerializer = formDataSerializer;
         const merged = mergeConfig(this.config, config);
-        return new AxiosClientRequestBuilder<PV, never, D>(this.axios, merged);
+        return new AxiosClientRequest<PV, never, D>(this.axios, merged);
     }
 
     /**
@@ -70,7 +70,7 @@ export default class AxiosClient {
         config.url = url;
         config.method = "put";
         const merged = mergeConfig(this.config, config);
-        return new AxiosClientRequestBuilder<PV, never, D>(this.axios, merged);
+        return new AxiosClientRequest<PV, never, D>(this.axios, merged);
     }
 
     /**
@@ -80,7 +80,7 @@ export default class AxiosClient {
         config.url = url;
         config.method = "patch";
         const merged = mergeConfig(this.config, config);
-        return new AxiosClientRequestBuilder<PV, never, D>(this.axios, merged);
+        return new AxiosClientRequest<PV, never, D>(this.axios, merged);
     }
 
     /**
@@ -90,7 +90,7 @@ export default class AxiosClient {
         config.url = url;
         config.method = "delete";
         const merged = mergeConfig(this.config, config);
-        return new AxiosClientRequestBuilder<PV, P, never>(this.axios, merged);
+        return new AxiosClientRequest<PV, P, never>(this.axios, merged);
     }
 
 }
