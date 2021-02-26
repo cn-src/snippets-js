@@ -98,6 +98,7 @@ export default class AxiosClient {
  * 将对象字符串化成 application/x-www-form-urlencoded 所需的格式
  */
 export declare function stringify(object: any): string;
+export declare function searchParams(params: any): any;
 export declare function formDataSerializer(data: any): FormData;
 /**
  * 路径变量解析
