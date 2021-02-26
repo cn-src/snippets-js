@@ -1,6 +1,6 @@
 import axios from "axios";
 import ServerMock from "mock-http-server";
-import AxiosClient, { Json } from "@/AxiosClient";
+import AxiosClient, { Simple } from "@/AxiosClient";
 import FormData from "form-data";
 
 interface DemoModel {
@@ -29,7 +29,7 @@ const client = new AxiosClient(
 );
 
 const api = {
-    getDemo: client.get<Json, DemoModel>(protocol + "/{pv}/getDemo"),
+    getDemo: client.get<DemoModel, Simple>(protocol + "/{pv}/getDemo"),
     getError: client.get(protocol + "/error"),
     postDemo: client.post(protocol + "/postDemo"),
     postFormDemo: client.postForm(protocol + "/postDemo"),
