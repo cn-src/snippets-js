@@ -7,7 +7,7 @@ import axios, {
     AxiosTransformer,
     CancelToken,
     Method,
-    ResponseType,
+    ResponseType
 } from "axios";
 
 import isCancel from "axios/lib/cancel/isCancel";
@@ -28,7 +28,7 @@ export default class AxiosClient {
 
     request<P, D, V>(config: AxiosClientRequestConfig) {
         const __axios: AxiosInstance = this.axios;
-        return async function (
+        return async function(
             paramsOrData?: P | D,
             requestData?: AxiosClientRequestData<P, D, V>
         ) {
@@ -157,6 +157,23 @@ export function stringify(object: any): string {
         }
     }
     return rs.join("&").replace(/%20/g, "+");
+}
+
+export function searchParams(params: any) {
+    if (params instanceof URLSearchParams) {
+        return params;
+    }
+    const searchParams = new URLSearchParams();
+    Object.keys(params).forEach(function(key) {
+        if (Array.isArray(params[key])) {
+            Object.keys(params[key]).forEach(function(subKey) {
+                searchParams.append(key, params[key][subKey]);
+            });
+        } else {
+            searchParams.append(key, params[key]);
+        }
+    });
+    return searchParams;
 }
 
 export function formDataSerializer(data: any) {
