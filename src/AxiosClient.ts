@@ -46,7 +46,7 @@ export default class AxiosClient {
                 requestData.data = usedConfig.dataSerializer(requestData.data) as any;
             }
             usedConfig.url = pathRender(usedConfig.url, requestData?.pathVariables);
-            usedConfig["params"] = requestData?.params;
+            usedConfig["params"] = searchParams(requestData?.params);
             usedConfig["data"] = requestData?.data;
 
             if (notNext) {
@@ -160,7 +160,7 @@ export function stringify(object: any): string {
 }
 
 export function searchParams(params: any) {
-    if (params instanceof URLSearchParams) {
+    if (!params || params instanceof URLSearchParams) {
         return params;
     }
     const searchParams = new URLSearchParams();
