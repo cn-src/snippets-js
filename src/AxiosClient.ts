@@ -176,7 +176,7 @@ export function mergeConfig<PV, P, D>(clientConfig?: AxiosClientConfig,
         if (["onGet", "onPost", "onPut", "onPatch", "onDelete"].includes(cc)) {
             const method = methodConfig.method?.toLowerCase() || "";
             if (cc.toLowerCase() === "on" + method) {
-                methodConfig.handler = clientConfig[cc];
+                methodConfig[cc] = clientConfig[cc];
             }
             continue;
         }
@@ -256,8 +256,22 @@ export interface AxiosClientRequestConfig<PV, P, D> extends AxiosRequestConfig {
      */
     extractCatchData?: boolean;
 
-    handler?: Handler<PV, P, D>;
     dataSerializer?: (params: any) => string | FormData;
+
+    /**
+     * 请求之前的处理，返回 false 则取消请求
+     */
+    preRequest?: PreRequest<PV, P, D>;
+
+    /**
+     * 响应成功 then 的处理
+     */
+    onThen?: OnThen<PV, P, D>;
+
+    /**
+     * 响应失败 catch 的处理, 不处理取消请求产生的错误
+     */
+    onCatch?: OnCatch<PV, P, D>;
 }
 
 export interface AxiosClientRequestData<PV, P, D> {

@@ -12,24 +12,9 @@ export default class AxiosClientRequestBuilder<PV, P, D> {
     private readonly axios: AxiosInstance;
     private readonly config: AxiosClientRequestConfig<PV, P, D>;
 
-    private _pathParams: any;
-    private _params: any;
-    private _data: any;
-
-    /**
-     * 请求之前的处理，返回 false 则取消请求
-     */
-    private _preRequest?: PreRequest<PV, P, D>;
-
-    /**
-     * 响应成功 then 的处理
-     */
-    private _onThen?: OnThen<PV, P, D>;
-
-    /**
-     * 响应失败 catch 的处理, 不处理取消请求产生的错误
-     */
-    private _onCatch?: OnCatch<PV, P, D>;
+    private _pathParams?: PV;
+    private _params?: P;
+    private _data?: D;
 
     constructor(axios: AxiosInstance, config: AxiosClientRequestConfig<PV, P, D>) {
         this.axios = axios;
@@ -51,21 +36,6 @@ export default class AxiosClientRequestBuilder<PV, P, D> {
         return this;
     }
 
-    preRequest(preRequest?: PreRequest<PV, P, D>) {
-        this._preRequest = preRequest;
-        return this;
-    }
-
-    onThen(onThen?: OnThen<PV, P, D>) {
-        this._onThen = onThen;
-        return this;
-    }
-
-    onCatch(onCatch?: OnCatch<PV, P, D>) {
-        this._onCatch = onCatch;
-        return this;
-    }
-
     async fetch() {
         const usedConfig = Object.assign({}, this.config);
         const requestData: AxiosClientRequestData<PV, P, D> = {
@@ -73,7 +43,7 @@ export default class AxiosClientRequestBuilder<PV, P, D> {
             params: this._params,
             data: this._data
         };
-        const isCancel = this._preRequest?.(requestData) === false;
+        const isCancel = usedConfig.preRequest?.(requestData) === false;
         if (isCancel) {
             throw new axios.Cancel(`Cancel Request: ${usedConfig.method} ${usedConfig.url}`);
         }
@@ -86,13 +56,13 @@ export default class AxiosClientRequestBuilder<PV, P, D> {
 
         try {
             const promise = await this.axios.request(usedConfig);
-            this._onThen?.(requestData, promise);
+            usedConfig.onThen?.(requestData, promise);
             return usedConfig.extractData === false ? promise : promise.data;
         } catch (e) {
             if (isAxiosCancel(e)) {
                 throw e;
             }
-            this._onCatch?.(requestData, e);
+            usedConfig.onCatch?.(requestData, e);
             throw usedConfig.extractCatchData === true && e.response ? e.response.data : e;
         }
     }
