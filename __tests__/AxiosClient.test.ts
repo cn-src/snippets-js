@@ -36,14 +36,12 @@ const api = {
     postFormDataDemo: client.postFormData(protocol + "/postDemo"),
     deleteDemo: client.delete(protocol + "/deleteDemo"),
     deleteDemo2: client.delete(protocol + "/deleteDemo", {
-        handler: {
-            preRequest(reqData) {
-                console.log("deleteDemo2 beforeRequest", reqData);
-                return true;
-            },
-            onThen(reqData) {
-                console.log("deleteDemo2 afterResponse", reqData);
-            }
+        preRequest(reqData) {
+            console.log("deleteDemo2 beforeRequest", reqData);
+            return true;
+        },
+        onThen(reqData) {
+            console.log("deleteDemo2 afterResponse", reqData);
         }
     })
 };
