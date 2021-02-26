@@ -271,7 +271,9 @@ export interface AxiosClientRequestConfig<PV, P, D> extends AxiosRequestConfig {
      */
     extractCatchData?: boolean;
 
-    dataSerializer?: (params: any) => string | FormData;
+    dataSerializer?: (data: D) => string | FormData;
+
+    paramsSerializer?: (params: P) => string;
 
     /**
      * 请求之前的处理，返回 false 则取消请求
