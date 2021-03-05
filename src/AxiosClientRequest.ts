@@ -4,7 +4,7 @@ import {
     AxiosClientRequestConfig,
     AxiosClientRequestData,
     pathRender,
-    searchParams,
+    searchParams
 } from "./AxiosClient";
 
 import isAxiosCancel from "axios/lib/cancel/isCancel";
@@ -57,7 +57,7 @@ export default class AxiosClientRequest<D, PV, P> {
     }
 
     async fetch() {
-        const requestData: AxiosClientRequestData<D, PV, P> = this._append;
+        const requestData: AxiosClientRequestData<D, PV, P> = this._append || {};
         requestData.pathParams = this._pathParams;
         requestData.params = this._params;
         requestData.data = this._data;
