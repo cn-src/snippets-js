@@ -4,7 +4,7 @@ import {
     AxiosClientRequestConfig,
     AxiosClientRequestData,
     pathRender,
-    searchParams,
+    searchParams
 } from "./AxiosClient";
 
 import isAxiosCancel from "axios/lib/cancel/isCancel";
@@ -24,23 +24,43 @@ export default class AxiosClientRequest<D, PV, P> {
         this.config = Object.assign({}, config);
     }
 
+    /**
+     * 设置路径参数
+     *
+     * @param pathParams 路径参数
+     */
     pathParams(pathParams: PV): AxiosClientRequest<D, PV, P> {
         this._pathParams = notEmptyObject(pathParams);
         return this;
     }
 
+    /**
+     * 设置 http body 参数
+     *
+     * @param data body 参数
+     */
     data(data: D): AxiosClientRequest<D, PV, P> {
         this._data = notEmptyObject(data);
         return this;
     }
 
+    /**
+     * 设置查询参数
+     *
+     * @param params 查询参数
+     */
     params(params: P): AxiosClientRequest<D, PV, P> {
         this._params = notEmptyObject(params);
         return this;
     }
 
+    /**
+     * 附加参数, 例如：附加 ui 组件对象，用于 preRequest 回调中用于确认对话框。
+     *
+     * @param append 附加对象，需要是一个 object 类型
+     */
     append(append: any) {
-        this._append = append;
+        this._append = notEmptyObject(append);
         return this;
     }
 
