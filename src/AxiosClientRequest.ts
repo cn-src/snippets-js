@@ -4,7 +4,7 @@ import {
     AxiosClientRequestConfig,
     AxiosClientRequestData,
     pathRender,
-    searchParams
+    searchParams,
 } from "./AxiosClient";
 
 import isAxiosCancel from "axios/lib/cancel/isCancel";

@@ -1,7 +1,7 @@
-import notNull from "./notNull";
-import strNotEmpty from "./strNotEmpty";
+import notNullOrUndefined from "./notNullOrUndefined";
+import notEmptyString from "./notEmptyString";
 declare const _default: {
-    notNull: typeof notNull;
-    strNotEmpty: typeof strNotEmpty;
+    notNull: typeof notNullOrUndefined;
+    strNotEmpty: typeof notEmptyString;
 };
 export default _default;
