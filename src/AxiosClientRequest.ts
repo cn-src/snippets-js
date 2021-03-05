@@ -8,6 +8,7 @@ import {
 } from "./AxiosClient";
 
 import isAxiosCancel from "axios/lib/cancel/isCancel";
+import notEmptyObject from "./assert/notEmptyObject";
 
 export default class AxiosClientRequest<D, PV, P> {
     private readonly axios: AxiosInstance;
@@ -23,33 +24,30 @@ export default class AxiosClientRequest<D, PV, P> {
     }
 
     pathParams(pathParams: PV): AxiosClientRequest<D, PV, P> {
-        this._pathParams = pathParams;
+        this._pathParams = notEmptyObject(pathParams);
         return this;
     }
 
     data(data: D): AxiosClientRequest<D, PV, P> {
-        this._data = data;
+        this._data = notEmptyObject(data);
         return this;
     }
 
     params(params: P): AxiosClientRequest<D, PV, P> {
-        this._params = params;
+        this._params = notEmptyObject(params);
         return this;
     }
 
+    async fetchByPathParams(pathParams: PV) {
+        return this.pathParams(pathParams).fetch();
+    }
+
     async fetchByParams(params: P) {
-        this._params = params;
-        return this.fetch();
+        return this.params(params).fetch();
     }
 
     async fetchByData(data: D) {
-        this._data = data;
-        return this.fetch();
-    }
-
-    async fetchByPathParams(pathParams: PV) {
-        this._pathParams = pathParams;
-        return this.fetch();
+        return this.data(data).fetch();
     }
 
     async fetch() {
