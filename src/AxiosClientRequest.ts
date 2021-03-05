@@ -4,7 +4,7 @@ import {
     AxiosClientRequestConfig,
     AxiosClientRequestData,
     pathRender,
-    searchParams,
+    searchParams
 } from "./AxiosClient";
 
 import isAxiosCancel from "axios/lib/cancel/isCancel";
@@ -37,12 +37,27 @@ export default class AxiosClientRequest<D, PV, P> {
         return this;
     }
 
+    async fetchByParams(params: P) {
+        this._params = params;
+        return this.fetch();
+    }
+
+    async fetchByData(data: D) {
+        this._data = data;
+        return this.fetch();
+    }
+
+    async fetchByPathParams(pathParams: PV) {
+        this._pathParams = pathParams;
+        return this.fetch();
+    }
+
     async fetch() {
         const usedConfig = Object.assign({}, this.config);
         const requestData: AxiosClientRequestData<D, PV, P> = {
             pathParams: this._pathParams,
             params: this._params,
-            data: this._data,
+            data: this._data
         };
         const isCancel = usedConfig.preRequest?.(requestData) === false;
         if (isCancel) {
