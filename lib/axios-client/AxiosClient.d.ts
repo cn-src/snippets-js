@@ -5,9 +5,10 @@ import AxiosClientRequest from "./AxiosClientRequest";
  */
 export default class AxiosClient {
     private readonly axios;
-    private readonly config?;
+    private _config?;
     constructor(axios: AxiosInstance, config?: AxiosClientConfig);
     request<D, PV, P>(config: AxiosClientRequestConfig<D, PV, P>): AxiosClientRequest<D, PV, P>;
+    config(config?: AxiosClientConfig): this;
     /**
      * GET 请求
      */
