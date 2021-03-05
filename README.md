@@ -10,7 +10,7 @@
 
 - assert
   - 参数校验
-- AxiosClient
+- axios-client
   - axios 简单封装
 
 # AxiosClient
