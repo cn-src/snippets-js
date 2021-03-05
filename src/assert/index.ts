@@ -1,4 +1,4 @@
 import notNull from "./notNull";
-import strNotEmpty from "./strNotEmpty";
+import notEmptyString from "./notEmptyString";
 
-export default { notNull, strNotEmpty };
+export default { notNull, strNotEmpty: notEmptyString };
