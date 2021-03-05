@@ -7,6 +7,7 @@ function notEmptyObject(value: any, msg?: string) {
     if (null == value || typeof value !== "object") {
         throw new ArgumentError(msg, notEmptyObject);
     }
+    return value;
 }
 
 export default notEmptyObject;
