@@ -17,6 +17,7 @@ export default class AxiosClientRequest<D, PV, P> {
     private _pathParams?: PV;
     private _params?: P;
     private _data?: D;
+    private _append?: any;
 
     constructor(axios: AxiosInstance, config: AxiosClientRequestConfig<D, PV, P>) {
         this.axios = axios;
@@ -38,6 +39,11 @@ export default class AxiosClientRequest<D, PV, P> {
         return this;
     }
 
+    append(append: any) {
+        this._append = append;
+        return this;
+    }
+
     async fetchByPathParams(pathParams: PV) {
         return this.pathParams(pathParams).fetch();
     }
@@ -52,11 +58,10 @@ export default class AxiosClientRequest<D, PV, P> {
 
     async fetch() {
         const usedConfig = Object.assign({}, this.config);
-        const requestData: AxiosClientRequestData<D, PV, P> = {
-            pathParams: this._pathParams,
-            params: this._params,
-            data: this._data
-        };
+        const requestData: AxiosClientRequestData<D, PV, P> = this._append;
+        requestData.pathParams = this._pathParams;
+        requestData.params = this._params;
+        requestData.data = this._data;
         const isCancel = usedConfig.preRequest?.(requestData) === false;
         if (isCancel) {
             throw new axios.Cancel(`Cancel Request: ${usedConfig.method} ${usedConfig.url}`);
