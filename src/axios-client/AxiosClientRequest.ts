@@ -57,6 +57,8 @@ export default class AxiosClientRequest<D, PV, P> {
     /**
      * 附加参数, 例如：附加 ui 组件对象，用于 preRequest 回调中用于确认对话框。
      *
+     * 大多数情况下应该应用于 AxiosClient 的统一配置中，比如 onDelete 的全局删除确认操作。
+     *
      * @param append 附加对象，需要是一个 object 类型
      */
     append(append: any) {
