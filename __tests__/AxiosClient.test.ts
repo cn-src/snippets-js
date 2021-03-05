@@ -1,6 +1,6 @@
 import axios from "axios";
 import ServerMock from "mock-http-server";
-import AxiosClient, { Simple } from "@/AxiosClient";
+import AxiosClient, { Simple } from "@/axios-client/AxiosClient";
 import FormData from "form-data";
 
 interface DemoModel {

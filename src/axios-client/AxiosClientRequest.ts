@@ -4,11 +4,11 @@ import {
     AxiosClientRequestConfig,
     AxiosClientRequestData,
     pathRender,
-    searchParams,
+    searchParams
 } from "./AxiosClient";
 
 import isAxiosCancel from "axios/lib/cancel/isCancel";
-import notEmptyObject from "./assert/notEmptyObject";
+import notEmptyObject from "../assert/notEmptyObject";
 
 export default class AxiosClientRequest<D, PV, P> {
     private readonly axios: AxiosInstance;

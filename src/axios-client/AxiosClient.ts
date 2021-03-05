@@ -6,15 +6,20 @@ import AxiosClientRequest from "./AxiosClientRequest";
  */
 export default class AxiosClient {
     private readonly axios: AxiosInstance;
-    private readonly config?: AxiosClientConfig;
+    private _config?: AxiosClientConfig;
 
     constructor(axios: AxiosInstance, config?: AxiosClientConfig) {
         this.axios = axios;
-        this.config = config;
+        this._config = config;
     }
 
     request<D, PV, P>(config: AxiosClientRequestConfig<D, PV, P>) {
-        return new AxiosClientRequest<D, PV, P>(this.axios, mergeConfig(this.config, config));
+        return new AxiosClientRequest<D, PV, P>(this.axios, mergeConfig(this._config, config));
+    }
+
+    config(config?: AxiosClientConfig) {
+        this._config = config;
+        return this;
     }
 
     /**
@@ -23,7 +28,7 @@ export default class AxiosClient {
     get<P = Simple, PV = Simple>(url: string, config: AxiosClientRequestConfig<never, PV, P> = {}) {
         config.method = "get";
         config.url = url;
-        const merged = mergeConfig(this.config, config);
+        const merged = mergeConfig(this._config, config);
         return new AxiosClientRequest<never, PV, P>(this.axios, merged);
     }
 
@@ -33,7 +38,7 @@ export default class AxiosClient {
     post<D = Json, PV = Simple>(url: string, config: AxiosClientRequestConfig<D, PV, never> = {}) {
         config.url = url;
         config.method = "post";
-        const merged = mergeConfig(this.config, config);
+        const merged = mergeConfig(this._config, config);
         return new AxiosClientRequest<D, PV, never>(this.axios, merged);
     }
 
@@ -47,7 +52,7 @@ export default class AxiosClient {
         config.url = url;
         config.method = "post";
         config.dataSerializer = stringify;
-        const merged = mergeConfig(this.config, config);
+        const merged = mergeConfig(this._config, config);
         return new AxiosClientRequest<D, PV, never>(this.axios, merged);
     }
 
@@ -61,7 +66,7 @@ export default class AxiosClient {
         config.url = url;
         config.method = "post";
         config.dataSerializer = formDataSerializer;
-        const merged = mergeConfig(this.config, config);
+        const merged = mergeConfig(this._config, config);
         return new AxiosClientRequest<D, PV, never>(this.axios, merged);
     }
 
@@ -71,7 +76,7 @@ export default class AxiosClient {
     put<D = Json, PV = Simple>(url: string, config: AxiosClientRequestConfig<D, PV, never> = {}) {
         config.url = url;
         config.method = "put";
-        const merged = mergeConfig(this.config, config);
+        const merged = mergeConfig(this._config, config);
         return new AxiosClientRequest<D, PV, never>(this.axios, merged);
     }
 
@@ -81,7 +86,7 @@ export default class AxiosClient {
     patch<D = Json, PV = Simple>(url: string, config: AxiosClientRequestConfig<D, PV, never> = {}) {
         config.url = url;
         config.method = "patch";
-        const merged = mergeConfig(this.config, config);
+        const merged = mergeConfig(this._config, config);
         return new AxiosClientRequest<D, PV, never>(this.axios, merged);
     }
 
@@ -94,7 +99,7 @@ export default class AxiosClient {
     ) {
         config.url = url;
         config.method = "delete";
-        const merged = mergeConfig(this.config, config);
+        const merged = mergeConfig(this._config, config);
         return new AxiosClientRequest<never, PV, P>(this.axios, merged);
     }
 }
@@ -123,9 +128,9 @@ export function searchParams(params: any) {
         return params;
     }
     const searchParams = new URLSearchParams();
-    Object.keys(params).forEach(function (key) {
+    Object.keys(params).forEach(function(key) {
         if (Array.isArray(params[key])) {
-            Object.keys(params[key]).forEach(function (subKey) {
+            Object.keys(params[key]).forEach(function(subKey) {
                 searchParams.append(key, params[key][subKey]);
             });
         } else {
