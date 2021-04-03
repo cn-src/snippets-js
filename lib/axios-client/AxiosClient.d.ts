@@ -24,14 +24,14 @@ export default class AxiosClient {
         config?: AxiosClientRequestConfig<D, PV, never>
     ): AxiosClientRequest<D, PV, never>;
     /**
-     * POST 请求, Content-Type 为 application/x-www-form-urlencoded
+     * POST 请求, Content-Type 为 application/x-www-form-urlencoded，一般用于表单的原始提交。
      */
     postForm<D = Simple, PV = Simple>(
         url: string,
         config?: AxiosClientRequestConfig<D, PV, never>
     ): AxiosClientRequest<D, PV, never>;
     /**
-     * POST 请求, Content-Type 为 multipart/form-data
+     * POST 请求, Content-Type 为 multipart/form-data, 一般用于文件上传。
      */
     postFormData<D = FormBlob, PV = Simple>(
         url: string,
