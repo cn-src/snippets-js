@@ -30,7 +30,7 @@ export default class AxiosClientRequest<D, PV, P> {
      * @param pathParams 路径参数
      */
     pathParams(pathParams: PV): AxiosClientRequest<D, PV, P> {
-        this._pathParams = notEmptyObject(pathParams);
+        this._pathParams = pathParams;
         return this;
     }
 
@@ -40,7 +40,7 @@ export default class AxiosClientRequest<D, PV, P> {
      * @param data body 参数
      */
     data(data: D): AxiosClientRequest<D, PV, P> {
-        this._data = notEmptyObject(data);
+        this._data = data;
         return this;
     }
 
@@ -50,7 +50,7 @@ export default class AxiosClientRequest<D, PV, P> {
      * @param params 查询参数
      */
     params(params: P): AxiosClientRequest<D, PV, P> {
-        this._params = notEmptyObject(params);
+        this._params =params;
         return this;
     }
 
