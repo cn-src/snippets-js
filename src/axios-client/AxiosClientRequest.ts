@@ -62,7 +62,7 @@ export default class AxiosClientRequest<D, PV, P> {
      * @param append 附加对象，需要是一个 object 类型
      */
     append(append: any) {
-        this._append = notEmptyObject(append);
+        this._append = append;
         return this;
     }
 
