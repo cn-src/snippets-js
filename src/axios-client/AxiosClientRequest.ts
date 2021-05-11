@@ -8,13 +8,12 @@ import {
 } from "./AxiosClient";
 
 import isAxiosCancel from "axios/lib/cancel/isCancel";
-import notEmptyObject from "../assert/notEmptyObject";
 
 export default class AxiosClientRequest<D, PV, P> {
     private readonly axios: AxiosInstance;
     private readonly config: AxiosClientRequestConfig<D, PV, P>;
 
-    private _pathParams?: PV;
+    private _pathVariables?: PV;
     private _params?: P;
     private _data?: D;
     private _attach?: any;
@@ -27,10 +26,10 @@ export default class AxiosClientRequest<D, PV, P> {
     /**
      * 设置路径参数
      *
-     * @param pathParams 路径参数
+     * @param pathVariables 路径参数
      */
-    pathParams(pathParams: PV): AxiosClientRequest<D, PV, P> {
-        this._pathParams = pathParams;
+    pathVariables(pathVariables: PV): AxiosClientRequest<D, PV, P> {
+        this._pathVariables = pathVariables;
         return this;
     }
 
@@ -67,7 +66,7 @@ export default class AxiosClientRequest<D, PV, P> {
     }
 
     async fetchByPathParams(pathParams: PV) {
-        return this.pathParams(pathParams).fetch();
+        return this.pathVariables(pathParams).fetch();
     }
 
     async fetchByParams(params: P) {
@@ -80,7 +79,7 @@ export default class AxiosClientRequest<D, PV, P> {
 
     async fetch() {
         const requestData: AxiosClientRequestData<D, PV, P> = this._attach || {};
-        requestData.pathParams = this._pathParams;
+        requestData.pathParams = this._pathVariables;
         requestData.params = this._params;
         requestData.data = this._data;
         const isCancel = this.config.preRequest?.(requestData) === false;

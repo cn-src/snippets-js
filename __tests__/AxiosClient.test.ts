@@ -48,7 +48,7 @@ const api = {
 
 test("get", (done) => {
     api.getDemo
-        .pathParams({ pv: "demo" })
+        .pathVariables({ pv: "demo" })
         .params({ p1: 1 })
         .fetch()
         .then(function(data) {
