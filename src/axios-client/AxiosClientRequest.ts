@@ -4,10 +4,11 @@ import {
     AxiosClientRequestConfig,
     AxiosClientRequestData,
     pathRender,
-    searchParams,
+    searchParams
 } from "./AxiosClient";
 
 import isAxiosCancel from "axios/lib/cancel/isCancel";
+import mustObject from "../assert/mustObject";
 
 export default class AxiosClientRequest<D, PV, P> {
     private readonly axios: AxiosInstance;
@@ -49,7 +50,7 @@ export default class AxiosClientRequest<D, PV, P> {
      * @param params 查询参数
      */
     params(params: P): AxiosClientRequest<D, PV, P> {
-        this._params =params;
+        this._params = params;
         return this;
     }
 
@@ -77,11 +78,18 @@ export default class AxiosClientRequest<D, PV, P> {
         return this.data(data).fetch();
     }
 
-    async fetch() {
+    async fetch(dataOrParams?: D | P) {
+        dataOrParams = mustObject(dataOrParams);
         const requestData: AxiosClientRequestData<D, PV, P> = this._attach || {};
         requestData.pathParams = this._pathVariables;
         requestData.params = this._params;
         requestData.data = this._data;
+
+        if (dataOrParams) {
+            ["get", "patch", "delete"].includes(<string>this.config.method?.toLowerCase())
+                ? requestData.params = dataOrParams as P : requestData.data = dataOrParams as D;
+        }
+
         const isCancel = this.config.preRequest?.(requestData) === false;
         if (isCancel) {
             throw new axios.Cancel(`Cancel Request: ${this.config.method} ${this.config.url}`);

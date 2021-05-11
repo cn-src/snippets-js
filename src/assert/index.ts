@@ -1,4 +1,6 @@
 import notNullOrUndefined from "./notNullOrUndefined";
 import notEmptyString from "./notEmptyString";
+import notEmptyObject from "./notEmptyObject";
+import mustObject from "./mustObject";
 
-export default { notNull: notNullOrUndefined, strNotEmpty: notEmptyString };
+export default { notNullOrUndefined, notEmptyString, notEmptyObject, mustObject };
