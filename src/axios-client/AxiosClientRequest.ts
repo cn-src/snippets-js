@@ -17,7 +17,7 @@ export default class AxiosClientRequest<D, PV, P> {
     private _pathVariables?: PV;
     private _params?: P;
     private _data?: D;
-    private _attach?: any;
+    private _attach?: Record<string, unknown>;
 
     constructor(axios: AxiosInstance, config: AxiosClientRequestConfig<D, PV, P>) {
         this.axios = axios;
@@ -30,7 +30,7 @@ export default class AxiosClientRequest<D, PV, P> {
      * @param pathVariables 路径参数
      */
     pathVariables(pathVariables: PV): AxiosClientRequest<D, PV, P> {
-        this._pathVariables = pathVariables;
+        this._pathVariables = mustObject(pathVariables);
         return this;
     }
 
@@ -40,7 +40,7 @@ export default class AxiosClientRequest<D, PV, P> {
      * @param data body 参数
      */
     data(data: D): AxiosClientRequest<D, PV, P> {
-        this._data = data;
+        this._data = mustObject(data);
         return this;
     }
 
@@ -50,7 +50,7 @@ export default class AxiosClientRequest<D, PV, P> {
      * @param params 查询参数
      */
     params(params: P): AxiosClientRequest<D, PV, P> {
-        this._params = params;
+        this._params = mustObject(params);
         return this;
     }
 
@@ -61,8 +61,8 @@ export default class AxiosClientRequest<D, PV, P> {
      *
      * @param attach 附加对象，需要是一个 object 类型
      */
-    attach(attach: any) {
-        this._attach = attach;
+    attach(attach: Record<string, unknown>) {
+        this._attach = mustObject(attach);
         return this;
     }
 
