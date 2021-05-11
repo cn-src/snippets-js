@@ -65,7 +65,7 @@ export default class AxiosClientRequest<D, PV, P> {
         return this;
     }
 
-    async fetchByPathParams(pathParams: PV) {
+    async fetchByPathVariables(pathParams: PV) {
         return this.pathVariables(pathParams).fetch();
     }
 
