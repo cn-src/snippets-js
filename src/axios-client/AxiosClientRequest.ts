@@ -17,7 +17,7 @@ export default class AxiosClientRequest<D, PV, P> {
     private _pathParams?: PV;
     private _params?: P;
     private _data?: D;
-    private _append?: any;
+    private _attach?: any;
 
     constructor(axios: AxiosInstance, config: AxiosClientRequestConfig<D, PV, P>) {
         this.axios = axios;
@@ -59,10 +59,10 @@ export default class AxiosClientRequest<D, PV, P> {
      *
      * 大多数情况下应该应用于 AxiosClient 的统一配置中，比如 onDelete 的全局删除确认操作。
      *
-     * @param append 附加对象，需要是一个 object 类型
+     * @param attach 附加对象，需要是一个 object 类型
      */
-    append(append: any) {
-        this._append = append;
+    attach(attach: any) {
+        this._attach = attach;
         return this;
     }
 
@@ -79,7 +79,7 @@ export default class AxiosClientRequest<D, PV, P> {
     }
 
     async fetch() {
-        const requestData: AxiosClientRequestData<D, PV, P> = this._append || {};
+        const requestData: AxiosClientRequestData<D, PV, P> = this._attach || {};
         requestData.pathParams = this._pathParams;
         requestData.params = this._params;
         requestData.data = this._data;
