@@ -4,7 +4,7 @@ import {
     AxiosClientRequestConfig,
     AxiosClientRequestData,
     pathRender,
-    searchParams
+    searchParams,
 } from "./AxiosClient";
 
 import isAxiosCancel from "axios/lib/cancel/isCancel";
@@ -87,7 +87,8 @@ export default class AxiosClientRequest<D, PV, P> {
 
         if (dataOrParams) {
             ["get", "patch", "delete"].includes(<string>this.config.method?.toLowerCase())
-                ? requestData.params = dataOrParams as P : requestData.data = dataOrParams as D;
+                ? (requestData.params = dataOrParams as P)
+                : (requestData.data = dataOrParams as D);
         }
 
         const isCancel = this.config.preRequest?.(requestData) === false;

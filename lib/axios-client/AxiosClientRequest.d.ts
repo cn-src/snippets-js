@@ -3,17 +3,17 @@ import { AxiosClientRequestConfig } from "./AxiosClient";
 export default class AxiosClientRequest<D, PV, P> {
     private readonly axios;
     private readonly config;
-    private _pathParams?;
+    private _pathVariables?;
     private _params?;
     private _data?;
-    private _append?;
+    private _attach?;
     constructor(axios: AxiosInstance, config: AxiosClientRequestConfig<D, PV, P>);
     /**
      * 设置路径参数
      *
-     * @param pathParams 路径参数
+     * @param pathVariables 路径参数
      */
-    pathParams(pathParams: PV): AxiosClientRequest<D, PV, P>;
+    pathVariables(pathVariables: PV): AxiosClientRequest<D, PV, P>;
     /**
      * 设置 http body 参数
      *
@@ -31,11 +31,11 @@ export default class AxiosClientRequest<D, PV, P> {
      *
      * 大多数情况下应该应用于 AxiosClient 的统一配置中，比如 onDelete 的全局删除确认操作。
      *
-     * @param append 附加对象，需要是一个 object 类型
+     * @param attach 附加对象，需要是一个 object 类型
      */
-    append(append: any): this;
-    fetchByPathParams(pathParams: PV): Promise<any>;
+    attach(attach: Record<string, unknown>): this;
+    fetchByPathVariables(pathVariables: PV): Promise<any>;
     fetchByParams(params: P): Promise<any>;
     fetchByData(data: D): Promise<any>;
-    fetch(): Promise<any>;
+    fetch(dataOrParams?: D | P): Promise<any>;
 }
