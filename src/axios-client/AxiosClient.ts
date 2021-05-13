@@ -1,4 +1,11 @@
-import { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
+import {
+    AxiosAdapter, AxiosBasicCredentials,
+    AxiosInstance, AxiosProxyConfig,
+    AxiosRequestConfig,
+    AxiosResponse,
+    AxiosTransformer, CancelToken,
+    Method, ResponseType
+} from "axios";
 import axiosRequest from "./axiosRequest";
 import stringify from "./stringify";
 import formDataSerializer from "./formDataSerializer";
@@ -18,12 +25,8 @@ export default class AxiosClient {
     request<D, PV, P>(config: AxiosClientRequestConfig<D, PV, P> = {}) {
         const _axios = this.axios;
         const _config = mergeConfig(this._config, config);
-        return async function (requestData?: AxiosClientRequestData<D, PV, P>) {
-            const config = Object.assign({}, _config);
-            config.pathVariables = requestData?.pathVariables;
-            config.data = requestData?.data;
-            config.params = requestData?.params;
-            return axiosRequest(_axios, config);
+        return async function(requestData?: AxiosClientRequestData<D, PV, P>) {
+            return axiosRequest(_axios, _config, requestData);
         };
     }
 
@@ -152,10 +155,10 @@ export type Json = {
 
 export type FormBlob = { [propName: string]: string | Blob };
 
-export type PreRequest<D, PV, P> = (requestData: AxiosClientRequestData<D, PV, P>) => boolean;
+export type PreRequest<D, PV, P> = (requestData?: AxiosClientRequestData<D, PV, P>) => boolean;
 export type OnThen<D, PV, P> = (
-    requestData: AxiosClientRequestData<D, PV, P>,
-    response: AxiosResponse
+    requestData?: AxiosClientRequestData<D, PV, P>,
+    response?: AxiosResponse
 ) => void;
 export type OnCatch<D, PV, P> = (
     requestData: AxiosClientRequestData<D, PV, P>,
@@ -197,10 +200,7 @@ export interface AxiosClientConfig extends AxiosRequestConfig {
     onDelete?: Handler<any, any, any>;
 }
 
-export interface AxiosClientRequestConfig<D, PV, P> extends AxiosRequestConfig {
-    pathVariables?: PV;
-    params?: P;
-    data?: D;
+export interface AxiosClientRequestConfig<D, PV, P> {
 
     /**
      * 提取响应的 data 部分
@@ -213,8 +213,6 @@ export interface AxiosClientRequestConfig<D, PV, P> extends AxiosRequestConfig {
     extractCatchData?: boolean;
 
     dataSerializer?: (data: D) => string | FormData;
-
-    paramsSerializer?: (params: P) => string;
 
     /**
      * 请求之前的处理，返回 false 则取消请求
@@ -230,11 +228,42 @@ export interface AxiosClientRequestConfig<D, PV, P> extends AxiosRequestConfig {
      * 响应失败 catch 的处理, 不处理取消请求产生的错误
      */
     onCatch?: OnCatch<D, PV, P>;
+
+    url?: string;
+    method?: Method;
+    baseURL?: string;
+    transformRequest?: AxiosTransformer | AxiosTransformer[];
+    transformResponse?: AxiosTransformer | AxiosTransformer[];
+    headers?: any;
+    // params?: any;
+    paramsSerializer?: (params: P) => string;
+    // data?: any;
+    timeout?: number;
+    timeoutErrorMessage?: string;
+    withCredentials?: boolean;
+    adapter?: AxiosAdapter;
+    auth?: AxiosBasicCredentials;
+    responseType?: ResponseType;
+    xsrfCookieName?: string;
+    xsrfHeaderName?: string;
+    onUploadProgress?: (progressEvent: any) => void;
+    onDownloadProgress?: (progressEvent: any) => void;
+    maxContentLength?: number;
+    validateStatus?: ((status: number) => boolean) | null;
+    maxBodyLength?: number;
+    maxRedirects?: number;
+    socketPath?: string | null;
+    httpAgent?: any;
+    httpsAgent?: any;
+    proxy?: AxiosProxyConfig | false;
+    cancelToken?: CancelToken;
+    decompress?: boolean;
 }
 
 export interface AxiosClientRequestData<D, PV, P> {
     pathVariables?: PV;
     params?: P;
     data?: D;
-    attach?: any;
+
+    [prop: string]: any;
 }
