@@ -9,9 +9,6 @@ export default async function axiosRequest<D, PV, P>(_axios: AxiosInstance,
                                                      _config: AxiosClientRequestConfig<D, PV, P>,
                                                      requestData?: AxiosClientRequestData<D, PV, P>) {
     const config = Object.assign({}, _config);
-    // config.pathVariables = requestData?.pathVariables;
-    // config.data = requestData?.data;
-    // config.params = requestData?.params;
     const isCancel = config.preRequest?.(requestData) === false;
 
     if (isCancel) {
