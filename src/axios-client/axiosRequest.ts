@@ -1,6 +1,6 @@
 import axios, { AxiosInstance } from "axios";
 import pathRender from "./pathRender";
-import searchParams from "./searchParams";
+import paramConverter from "./paramConverter";
 import { AxiosClientRequestConfig, AxiosClientRequestData } from "./AxiosClient";
 
 import isAxiosCancel from "axios/lib/cancel/isCancel";
@@ -21,7 +21,7 @@ export default async function axiosRequest<D, PV, P>(_axios: AxiosInstance,
         config["data"] = config.dataSerializer(requestData?.data) as any;
     }
     if (requestData?.params) {
-        config["params"] = searchParams(requestData?.params);
+        config["params"] = paramConverter(URLSearchParams, requestData?.params);
     }
     try {
         const promise = await _axios.request(config);

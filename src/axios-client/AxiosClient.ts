@@ -8,7 +8,7 @@ import {
 } from "axios";
 import axiosRequest from "./axiosRequest";
 import stringify from "./stringify";
-import formDataSerializer from "./formDataSerializer";
+import paramConverter from "./paramConverter";
 
 /**
  * 根据 axios 创建一个新的 AxiosClient
@@ -75,7 +75,7 @@ export default class AxiosClient {
     ) {
         config.url = url;
         config.method = "post";
-        config.dataSerializer = formDataSerializer;
+        config.dataSerializer = (data) => paramConverter(FormData, data);
         return this.request<D, PV, never>(config);
     }
 
