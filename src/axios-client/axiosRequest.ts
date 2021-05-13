@@ -14,12 +14,15 @@ export default async function axiosRequest<D, PV, P>(_axios: AxiosInstance,
     if (isCancel) {
         throw new axios.Cancel(`Cancel Request: ${config.method} ${config.url}`);
     }
-
+    if (requestData?.pathVariables) {
+        config.url = pathRender(<string>config.url, requestData?.pathVariables);
+    }
     if (requestData?.data && config.dataSerializer) {
         config["data"] = config.dataSerializer(requestData?.data) as any;
     }
-    config.url = pathRender(<string>config.url, requestData?.pathVariables);
-    config["params"] = searchParams(requestData?.params);
+    if (requestData?.params) {
+        config["params"] = searchParams(requestData?.params);
+    }
     try {
         const promise = await _axios.request(config);
         config.onThen?.(requestData, promise);
