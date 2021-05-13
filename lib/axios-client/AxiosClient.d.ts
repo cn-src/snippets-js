@@ -1,5 +1,4 @@
 import { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
-import AxiosClientRequest from "./AxiosClientRequest";
 /**
  * 根据 axios 创建一个新的 AxiosClient
  */
@@ -7,68 +6,60 @@ export default class AxiosClient {
     private readonly axios;
     private _config?;
     constructor(axios: AxiosInstance, config?: AxiosClientConfig);
-    request<D, PV, P>(config: AxiosClientRequestConfig<D, PV, P>): AxiosClientRequest<D, PV, P>;
-    config(config?: AxiosClientConfig): this;
+    request<D, PV, P>(
+        config?: AxiosClientRequestConfig<D, PV, P>
+    ): (requestData?: AxiosClientRequestData<D, PV, P> | undefined) => Promise<any>;
+    config(config: AxiosClientConfig): this;
     /**
      * GET 请求
      */
     get<P = Simple, PV = Simple>(
         url: string,
         config?: AxiosClientRequestConfig<never, PV, P>
-    ): AxiosClientRequest<never, PV, P>;
+    ): (requestData?: AxiosClientRequestData<never, PV, P> | undefined) => Promise<any>;
     /**
      * POST 请求
      */
     post<D = Json, PV = Simple>(
         url: string,
         config?: AxiosClientRequestConfig<D, PV, never>
-    ): AxiosClientRequest<D, PV, never>;
+    ): (requestData?: AxiosClientRequestData<D, PV, never> | undefined) => Promise<any>;
     /**
      * POST 请求, Content-Type 为 application/x-www-form-urlencoded，一般用于表单的原始提交。
      */
     postForm<D = Simple, PV = Simple>(
         url: string,
         config?: AxiosClientRequestConfig<D, PV, never>
-    ): AxiosClientRequest<D, PV, never>;
+    ): (requestData?: AxiosClientRequestData<D, PV, never> | undefined) => Promise<any>;
     /**
      * POST 请求, Content-Type 为 multipart/form-data, 一般用于文件上传。
      */
     postFormData<D = FormBlob, PV = Simple>(
         url: string,
         config?: AxiosClientRequestConfig<D, PV, never>
-    ): AxiosClientRequest<D, PV, never>;
+    ): (requestData?: AxiosClientRequestData<D, PV, never> | undefined) => Promise<any>;
     /**
      * PUT 请求
      */
     put<D = Json, PV = Simple>(
         url: string,
         config?: AxiosClientRequestConfig<D, PV, never>
-    ): AxiosClientRequest<D, PV, never>;
+    ): (requestData?: AxiosClientRequestData<D, PV, never> | undefined) => Promise<any>;
     /**
      * PATCH 请求
      */
     patch<D = Json, PV = Simple>(
         url: string,
         config?: AxiosClientRequestConfig<D, PV, never>
-    ): AxiosClientRequest<D, PV, never>;
+    ): (requestData?: AxiosClientRequestData<D, PV, never> | undefined) => Promise<any>;
     /**
      * DELETE 请求
      */
     delete<P = Simple, PV = Simple>(
         url: string,
         config?: AxiosClientRequestConfig<never, PV, P>
-    ): AxiosClientRequest<never, PV, P>;
+    ): (requestData?: AxiosClientRequestData<never, PV, P> | undefined) => Promise<any>;
 }
-/**
- * 将对象字符串化成 application/x-www-form-urlencoded 所需的格式
- */
-export declare function stringify(object: any): string;
-export declare function searchParams(params: any): any;
-export declare function formDataSerializer(data: any): FormData;
-/**
- * 路径变量解析
- */
-export declare function pathRender<T = Simple>(path: string, pathVariables?: T): string;
 export declare function mergeConfig<D, PV, P>(
     clientConfig?: AxiosClientConfig,
     methodConfig?: AxiosClientRequestConfig<D, PV, P>
@@ -133,7 +124,7 @@ export interface AxiosClientConfig extends AxiosRequestConfig {
     onDelete?: Handler<any, any, any>;
 }
 export interface AxiosClientRequestConfig<D, PV, P> extends AxiosRequestConfig {
-    pathParams?: PV;
+    pathVariables?: PV;
     params?: P;
     data?: D;
     /**
@@ -160,8 +151,8 @@ export interface AxiosClientRequestConfig<D, PV, P> extends AxiosRequestConfig {
     onCatch?: OnCatch<D, PV, P>;
 }
 export interface AxiosClientRequestData<D, PV, P> {
-    pathParams?: PV;
+    pathVariables?: PV;
     params?: P;
     data?: D;
-    [prop: string]: any;
+    attach?: any;
 }

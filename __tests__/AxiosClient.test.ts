@@ -47,10 +47,7 @@ const api = {
 };
 
 test("get", (done) => {
-    api.getDemo
-        .pathVariables({ pv: "demo" })
-        .params({ p1: 1 })
-        .fetch()
+    api.getDemo({ pathVariables: { pv: "demo" }, params: { p1: 1 } })
         .then(function(data) {
             expect(data).toStrictEqual({ hello: "world" });
             done();
@@ -58,8 +55,7 @@ test("get", (done) => {
 });
 
 test("error", (done) => {
-    api.getError
-        .fetch()
+    api.getError()
         .then(function() {
             done();
         })
@@ -70,8 +66,7 @@ test("error", (done) => {
 });
 
 test("post", (done) => {
-    api.postDemo
-        .fetch()
+    api.postDemo()
         .then(function(data) {
             expect(data).toStrictEqual({ hello: "world" });
             done();
@@ -79,9 +74,7 @@ test("post", (done) => {
 });
 
 test("post_HasData", (done) => {
-    api.postDemo
-        .data({ d1: "d1" })
-        .fetch()
+    api.postDemo({ data: { d1: "d1" } })
         .then(function(data) {
             expect(data).toStrictEqual({ hello: "world" });
             done();
@@ -89,9 +82,7 @@ test("post_HasData", (done) => {
 });
 
 test("postForm", (done) => {
-    api.postFormDemo
-        .data({ d1: "d1" })
-        .fetch()
+    api.postFormDemo({ data: { d1: "d1" } })
         .then(function(data) {
             expect(data).toStrictEqual({ hello: "world" });
             done();
@@ -102,9 +93,7 @@ test("postFormData", (done) => {
     // @ts-ignore
     global.FormData = FormData;
 
-    api.postFormDataDemo
-        .data({ d1: "d1" })
-        .fetch()
+    api.postFormDataDemo({ data: { d1: "d1" } })
         .then(function(data) {
             expect(data).toStrictEqual({ hello: "world" });
             done();
@@ -112,8 +101,7 @@ test("postFormData", (done) => {
 });
 
 test("delete", (done) => {
-    api.deleteDemo
-        .fetch()
+    api.deleteDemo()
         .then(function(data) {
             expect(data).toStrictEqual({ hello: "world" });
             done();
@@ -121,10 +109,11 @@ test("delete", (done) => {
 });
 
 test("delete_2", (done) => {
-    api.deleteDemo2.fetch().then(function(data) {
-        expect(data).toStrictEqual({ hello: "world" });
-        done();
-    });
+    api.deleteDemo2()
+        .then(function(data) {
+            expect(data).toStrictEqual({ hello: "world" });
+            done();
+        });
 });
 
 beforeAll((done) => {
