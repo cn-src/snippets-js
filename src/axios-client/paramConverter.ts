@@ -1,8 +1,8 @@
 import ArgumentError from "../ArgumentError";
 
 type Parameter = {
-    new(): FormData | URLSearchParams
-}
+    new (): FormData | URLSearchParams;
+};
 
 export default function paramConverter<T>(parameter: Parameter, data?: any) {
     if (data === null || data === undefined) {

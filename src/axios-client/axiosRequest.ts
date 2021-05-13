@@ -5,9 +5,11 @@ import { AxiosClientRequestConfig, AxiosClientRequestData } from "./AxiosClient"
 
 import isAxiosCancel from "axios/lib/cancel/isCancel";
 
-export default async function axiosRequest<D, PV, P>(_axios: AxiosInstance,
-                                                     _config: AxiosClientRequestConfig<D, PV, P>,
-                                                     requestData?: AxiosClientRequestData<D, PV, P>) {
+export default async function axiosRequest<D, PV, P>(
+    _axios: AxiosInstance,
+    _config: AxiosClientRequestConfig<D, PV, P>,
+    requestData?: AxiosClientRequestData<D, PV, P>
+) {
     const config = Object.assign({}, _config);
     const isCancel = config.preRequest?.(requestData) === false;
 

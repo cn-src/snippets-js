@@ -1,10 +1,14 @@
 import {
-    AxiosAdapter, AxiosBasicCredentials,
-    AxiosInstance, AxiosProxyConfig,
+    AxiosAdapter,
+    AxiosBasicCredentials,
+    AxiosInstance,
+    AxiosProxyConfig,
     AxiosRequestConfig,
     AxiosResponse,
-    AxiosTransformer, CancelToken,
-    Method, ResponseType
+    AxiosTransformer,
+    CancelToken,
+    Method,
+    ResponseType,
 } from "axios";
 import axiosRequest from "./axiosRequest";
 import stringify from "./stringify";
@@ -25,7 +29,7 @@ export default class AxiosClient {
     request<D, PV, P>(config: AxiosClientRequestConfig<D, PV, P> = {}) {
         const _axios = this.axios;
         const _config = mergeConfig(this._config, config);
-        return async function(requestData?: AxiosClientRequestData<D, PV, P>) {
+        return async function (requestData?: AxiosClientRequestData<D, PV, P>) {
             return axiosRequest(_axios, _config, requestData);
         };
     }
@@ -201,7 +205,6 @@ export interface AxiosClientConfig extends AxiosRequestConfig {
 }
 
 export interface AxiosClientRequestConfig<D, PV, P> {
-
     /**
      * 提取响应的 data 部分
      */
