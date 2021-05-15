@@ -4,7 +4,7 @@ type Parameter = {
     new (): FormData | URLSearchParams;
 };
 
-export default function paramConverter<T>(parameter: Parameter, data?: any) {
+export default function paramConverter(parameter: Parameter, data?: any) {
     if (data === null || data === undefined) {
         return data;
     }
