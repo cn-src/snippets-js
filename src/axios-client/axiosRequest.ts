@@ -19,8 +19,9 @@ export default async function axiosRequest<D, PV, P>(
     if (requestData?.pathVariables) {
         config.url = pathRender(<string>config.url, requestData?.pathVariables);
     }
-    if (requestData?.data && config.dataSerializer) {
-        config["data"] = config.dataSerializer(requestData?.data) as any;
+    if (requestData?.data) {
+        config["data"] = config.dataSerializer ? config.dataSerializer(requestData?.data)
+            : (requestData?.data as any);
     }
     if (requestData?.params) {
         config["params"] = paramConverter(URLSearchParams, requestData?.params);
